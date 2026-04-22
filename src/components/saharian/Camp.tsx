@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import Image from 'next/image'
 import { Compass, Coffee, Tent, UtensilsCrossed, Star } from 'lucide-react'
 
 const campStops = [
@@ -10,7 +11,7 @@ const campStops = [
     title: 'The Approach',
     subtitle: 'Journey through the dunes',
     description: 'A 4x4 adventure through the golden Erg Chebbi dunes, where the landscape shifts from palm-fringed oases to vast seas of sand. Every curve reveals a new horizon.',
-    image: '/images/hero-desert.png',
+    image: '/images/gallery/camp-aerial-layout.jpg',
     icon: Compass,
     accent: 'The road dissolves into sand. Civilization fades. The desert begins.',
   },
@@ -19,7 +20,7 @@ const campStops = [
     title: 'The Welcome',
     subtitle: 'Tea ceremony & tradition',
     description: 'Be greeted with the traditional Berber tea ceremony — three glasses of sweet mint tea, each with its own meaning: life, love, and death. Sit on hand-woven carpets as the camp reveals itself.',
-    image: '/images/tea-ceremony.png',
+    image: '/images/gallery/welcome-drinks-tray.jpg',
     icon: Coffee,
     accent: 'Three glasses. Three meanings. One unforgettable welcome.',
   },
@@ -28,7 +29,7 @@ const campStops = [
     title: 'The Tents',
     subtitle: 'Luxury under canvas',
     description: 'Spacious glamping suites where traditional Berber craftsmanship meets modern luxury. King beds with Egyptian cotton, private en-suite bathrooms, and panoramic dune views from your private terrace.',
-    image: '/images/camp-tent.png',
+    image: '/images/gallery/luxury-bedroom-view.jpg',
     icon: Tent,
     accent: 'Where the nomadic spirit meets uncompromising comfort.',
   },
@@ -37,7 +38,7 @@ const campStops = [
     title: 'The Table',
     subtitle: 'Bio gastronomy under stars',
     description: 'A culinary journey through Moroccan flavors, prepared with organic ingredients from our garden. Each meal is a celebration of the land — from traditional tagines to innovative Berber-fusion cuisine.',
-    image: '/images/dining-stars.png',
+    image: '/images/gallery/authentic-moroccan-dinner.jpg',
     icon: UtensilsCrossed,
     accent: 'Every meal tells the story of the land it comes from.',
   },
@@ -46,7 +47,7 @@ const campStops = [
     title: 'The Night',
     subtitle: 'Stargazing & silence',
     description: 'Under the unpolluted Saharan sky, a billion stars reveal themselves. Our stargazing deck offers telescopes and guided celestial tours. The Milky Way has never looked closer.',
-    image: '/images/stargazing.png',
+    image: '/images/gallery/sunset-lounge-area.jpg',
     icon: Star,
     accent: 'In the desert night, the sky is closer than the ground.',
   },
@@ -128,11 +129,18 @@ export default function Camp() {
               const Icon = stop.icon
               return (
                 <div key={stop.id} className="min-w-full h-full relative flex items-center">
-                  {/* Background image */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url('${stop.image}')` }}
-                  />
+                  {/* Background image optimized */}
+                  <div className="absolute inset-0">
+                    <Image
+                      src={stop.image}
+                      alt={stop.title}
+                      fill
+                      className="object-cover"
+                      priority={i === 0}
+                      sizes="100vw"
+                      loading={i === 0 ? undefined : "lazy"}
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-[#0F0F1E]/70" />
                   <div className="absolute inset-0 bg-gradient-to-r from-[#0F0F1E]/80 via-[#0F0F1E]/40 to-transparent" />
 

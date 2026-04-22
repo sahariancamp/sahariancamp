@@ -96,13 +96,13 @@ function TiltCard({ experience, onClick }: { experience: typeof experiences[0]; 
       data-cursor-hover
     >
       <div
-        className="tilt-card glass-card rounded-2xl overflow-hidden h-[420px] md:h-[480px]"
+        className="tilt-card glass-card rounded-2xl overflow-hidden h-[360px] md:h-[400px]"
         style={{
           transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
         }}
       >
         {/* Image */}
-        <div className="relative h-56 md:h-64 overflow-hidden">
+        <div className="relative h-40 md:h-48 overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
             style={{ backgroundImage: `url('${experience.image}')` }}
@@ -165,10 +165,10 @@ export default function Experiences() {
   const [selectedExperience, setSelectedExperience] = useState<typeof experiences[0] | null>(null)
 
   return (
-    <section id="experiences" className="py-24 md:py-32 px-6 desert-gradient">
+    <section id="experiences" className="py-16 md:py-24 px-6 desert-gradient">
       <div className="max-w-7xl mx-auto">
         {/* Section header */}
-        <div className="text-center mb-16 md:mb-24">
+        <div className="text-center mb-10 md:mb-16">
           <motion.span
             className="text-[#C4A35A] text-xs tracking-[0.5em] uppercase block mb-6"
             style={{ fontFamily: "'Amiri', serif" }}

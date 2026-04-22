@@ -2,69 +2,77 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X } from 'lucide-react'
+import Image from 'next/image'
+import { Maximize2, X } from 'lucide-react'
 
-const galleryCategories = ['All', 'Dunes', 'Tents', 'Food', 'People', 'Stars']
+const categories = ['Sanctuaries', 'Experiences', 'Camp Life']
 
 const galleryImages = [
-  { id: 1, src: '/images/hero-desert.png', category: 'Dunes', title: 'Golden hour at Erg Chebbi', span: 'col-span-1 row-span-2' },
-  { id: 2, src: '/images/camp-tent.png', category: 'Tents', title: 'Luxury tent at dawn', span: 'col-span-1 row-span-1' },
-  { id: 3, src: '/images/dining-stars.png', category: 'Food', title: 'Dinner under the stars', span: 'col-span-1 row-span-1' },
-  { id: 4, src: '/images/camel-trek.png', category: 'Dunes', title: 'Caravan at sunset', span: 'col-span-1 row-span-2' },
-  { id: 5, src: '/images/stargazing.png', category: 'Stars', title: 'The Milky Way reveals itself', span: 'col-span-1 row-span-1' },
-  { id: 6, src: '/images/tea-ceremony.png', category: 'People', title: 'Traditional tea ceremony', span: 'col-span-1 row-span-1' },
-  { id: 7, src: '/images/berber-music.png', category: 'People', title: 'Night of Berber music', span: 'col-span-1 row-span-1' },
-  { id: 8, src: '/images/tent-interior.png', category: 'Tents', title: 'Inside the Sahara Suite', span: 'col-span-1 row-span-1' },
-  { id: 9, src: '/images/sunrise-yoga.png', category: 'People', title: 'Sunrise yoga on the dunes', span: 'col-span-1 row-span-1' },
-  { id: 10, src: '/images/quad-biking.png', category: 'Dunes', title: 'Adventure through the dunes', span: 'col-span-1 row-span-1' },
+  // Sanctuaries
+  { id: 2, category: 'Sanctuaries', src: '/images/gallery/luxury-bedroom-view.jpg', title: 'Royal Suite Sanctuary' },
+  { id: 4, category: 'Sanctuaries', src: '/images/gallery/family-triple-tent.jpg', title: 'Family Triple Suite' },
+  { id: 5, category: 'Sanctuaries', src: '/images/gallery/twin-deluxe-tent.jpg', title: 'Deluxe Twin Room' },
+  { id: 6, category: 'Sanctuaries', src: '/images/gallery/traditional-twin-tent.jpg', title: 'Berber Traditional Suite' },
+  { id: 12, category: 'Sanctuaries', src: '/images/gallery/quadruple-family-suite.jpg', title: 'Sahara Family Lodge' },
+  { id: 3, category: 'Sanctuaries', src: '/images/gallery/private-bathroom-tent.jpg', title: 'Luxury Private Bath' },
+  { id: 9, category: 'Sanctuaries', src: '/images/gallery/modern-bathroom-interior.jpg', title: 'Modern Bath Amenities' },
+  { id: 10, category: 'Sanctuaries', src: '/images/gallery/vanity-mirror-tent.jpg', title: 'Tent Vanity Space' },
+  { id: 11, category: 'Sanctuaries', src: '/images/gallery/luxury-bathroom-detail.jpg', title: 'Artisan Bath Design' },
+  { id: 16, category: 'Sanctuaries', src: '/images/gallery/luxury-shower-unit.jpg', title: 'Luxury Desert Shower' },
+  { id: 15, category: 'Sanctuaries', src: '/images/gallery/luxury-toiletries-setup.jpg', title: 'Handcrafted Amenities' },
+  
+  // Experiences
+  { id: 1, category: 'Experiences', src: '/images/gallery/welcome-drinks-tray.jpg', title: 'Welcome Refreshments' },
+  { id: 7, category: 'Experiences', src: '/images/gallery/authentic-moroccan-dinner.jpg', title: 'Moroccan Gastronomy' },
+  { id: 8, category: 'Experiences', src: '/images/gallery/family-dining-experience.jpg', title: 'Communal Dining' },
+  
+  // Camp Life
+  { id: 13, category: 'Camp Life', src: '/images/gallery/camp-aerial-layout.jpg', title: 'Saharian Camp Estate' },
+  { id: 14, category: 'Camp Life', src: '/images/gallery/sunset-lounge-area.jpg', title: 'Sunset Relaxation Lounge' },
 ]
 
 export default function Gallery() {
-  const [activeCategory, setActiveCategory] = useState('All')
-  const [lightboxImage, setLightboxImage] = useState<typeof galleryImages[0] | null>(null)
+  const [activeCategory, setActiveCategory] = useState('Sanctuaries')
+  const [selectedImage, setSelectedImage] = useState<typeof galleryImages[0] | null>(null)
 
-  const filteredImages = activeCategory === 'All'
-    ? galleryImages
-    : galleryImages.filter(img => img.category === activeCategory)
+  const filteredImages = galleryImages.filter(img => img.category === activeCategory)
 
   return (
-    <section id="gallery" className="py-24 md:py-32 px-6 relative">
-      <div className="max-w-7xl mx-auto">
-        {/* Section header */}
-        <div className="text-center mb-16">
-          <motion.span
-            className="text-[#C4A35A] text-xs tracking-[0.5em] uppercase block mb-6"
-            style={{ fontFamily: "'Amiri', serif" }}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            Light & Shadow
-          </motion.span>
-          <motion.h2
-            className="text-4xl md:text-6xl lg:text-7xl font-light text-[#E8D5B7] mb-6 text-glow"
+    <section className="py-12 bg-[#0F0F1E]">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <motion.h2 
+            className="text-4xl md:text-6xl font-light text-[#E8D5B7] mb-4"
             style={{ fontFamily: "'Playfair Display', serif" }}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            Visual <span className="text-[#C4A35A]">Poetry</span>
+          </motion.h2>
+          <motion.p 
+            className="text-[#D4C4A8]/70 max-w-2xl mx-auto text-base"
+            style={{ fontFamily: "'Amiri', serif" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Captured <span className="text-[#C4A35A]">Moments</span>
-          </motion.h2>
+            A window into the timeless beauty of the Saharian Camp.
+          </motion.p>
         </div>
 
-        {/* Category filters */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {galleryCategories.map((cat) => (
+        {/* Category Tabs */}
+        <div className="flex flex-wrap justify-center gap-4 mb-16">
+          {categories.map((cat) => (
             <button
               key={cat}
-              className={`px-5 py-2 rounded-full text-xs tracking-[0.2em] uppercase transition-all border ${
+              onClick={() => setActiveCategory(cat)}
+              className={`px-8 py-2 rounded-full text-xs tracking-[0.2em] uppercase transition-all border ${
                 activeCategory === cat
-                  ? 'bg-[#C4A35A]/15 border-[#C4A35A]/40 text-[#C4A35A]'
-                  : 'border-[#C4A35A]/10 text-[#8A8A9E] hover:border-[#C4A35A]/20 hover:text-[#D4C4A8]'
+                  ? 'bg-[#C4A35A] border-[#C4A35A] text-[#0F0F1E]'
+                  : 'border-[#C4A35A]/10 text-[#8A8A9E] hover:border-[#C4A35A]/40 hover:text-[#D4C4A8]'
               }`}
               style={{ fontFamily: "'Amiri', serif" }}
-              onClick={() => setActiveCategory(cat)}
               data-cursor-hover
             >
               {cat}
@@ -72,42 +80,46 @@ export default function Gallery() {
           ))}
         </div>
 
-        {/* Masonry grid */}
-        <motion.div className="masonry-grid" layout>
-          <AnimatePresence>
+        {/* Masonry-like Grid */}
+        <motion.div 
+          layout
+          className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6"
+        >
+          <AnimatePresence mode="popLayout">
             {filteredImages.map((image) => (
               <motion.div
                 key={image.id}
-                className="relative group cursor-pointer overflow-hidden rounded-xl"
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.4 }}
-                onClick={() => setLightboxImage(image)}
-                data-cursor-hover
+                className="relative group cursor-pointer break-inside-avoid rounded-2xl overflow-hidden border border-[#C4A35A]/10"
+                onClick={() => setSelectedImage(image)}
               >
-                <div className="relative aspect-[3/4] overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-                    style={{ backgroundImage: `url('${image.src}')` }}
+                <div className="aspect-[4/5] bg-[#1A1A2E] overflow-hidden">
+                  <Image
+                    src={image.src}
+                    alt={image.title}
+                    width={800}
+                    height={1000}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    loading="lazy"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F1E]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  {/* Hover content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <p className="text-[#E8D5B7] text-sm font-light" style={{ fontFamily: "'Playfair Display', serif" }}>
-                      {image.title}
-                    </p>
-                    <p className="text-[#C4A35A] text-xs mt-1" style={{ fontFamily: "'Amiri', serif" }}>
-                      {image.category}
-                    </p>
-                  </div>
                 </div>
-
-                {/* Light leak effect on hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                  <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-bl from-[#C4A35A]/10 to-transparent" />
+                
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-[#0F0F1E]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 text-center">
+                  <div className="w-10 h-10 rounded-full bg-[#C4A35A] flex items-center justify-center mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    <Maximize2 className="w-4 h-4 text-[#0F0F1E]" />
+                  </div>
+                  <h4 className="text-[#E8D5B7] text-lg font-light mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    {image.title}
+                  </h4>
+                  <p className="text-[#C4A35A] text-xs tracking-widest uppercase">
+                    {image.category}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -115,47 +127,45 @@ export default function Gallery() {
         </motion.div>
       </div>
 
-      {/* Lightbox */}
+      {/* Lightbox Modal */}
       <AnimatePresence>
-        {lightboxImage && (
+        {selectedImage && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-[#0A0A1A]/95 flex items-center justify-center p-6 md:p-12"
+            onClick={() => setSelectedImage(null)}
           >
-            <div
-              className="absolute inset-0 bg-[#0A0A1A]/95 backdrop-blur-xl"
-              onClick={() => setLightboxImage(null)}
-            />
-            <motion.div
-              className="relative z-10 max-w-4xl w-full"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25 }}
+            <button 
+              className="absolute top-8 right-8 w-12 h-12 rounded-full bg-[#1A1A2E] border border-[#C4A35A]/20 flex items-center justify-center text-[#C4A35A] hover:bg-[#C4A35A]/10 transition-all"
+              onClick={() => setSelectedImage(null)}
             >
-              <div className="relative aspect-[16/10] rounded-2xl overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url('${lightboxImage.src}')` }}
-                />
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <div>
-                  <p className="text-[#E8D5B7] text-lg font-light" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    {lightboxImage.title}
-                  </p>
-                  <p className="text-[#C4A35A] text-xs tracking-wider uppercase" style={{ fontFamily: "'Amiri', serif" }}>
-                    {lightboxImage.category}
-                  </p>
-                </div>
-                <button
-                  className="w-10 h-10 rounded-full border border-[#C4A35A]/30 flex items-center justify-center text-[#D4C4A8] hover:text-[#C4A35A] transition-colors"
-                  onClick={() => setLightboxImage(null)}
-                >
-                  <X className="w-4 h-4" />
-                </button>
+              <X className="w-6 h-6" />
+            </button>
+            
+            <motion.div 
+              className="relative max-w-5xl w-full max-h-full aspect-video md:aspect-auto rounded-3xl overflow-hidden border border-[#C4A35A]/20"
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={selectedImage.src}
+                alt={selectedImage.title}
+                width={1920}
+                height={1080}
+                className="w-full h-full object-contain"
+                priority
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#0A0A1A] to-transparent">
+                <h3 className="text-2xl md:text-4xl text-[#E8D5B7] font-light" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  {selectedImage.title}
+                </h3>
+                <p className="text-[#C4A35A] tracking-[0.3em] uppercase text-xs mt-2">
+                  {selectedImage.category}
+                </p>
               </div>
             </motion.div>
           </motion.div>

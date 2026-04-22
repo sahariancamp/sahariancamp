@@ -25,7 +25,7 @@ export default function Home() {
         <SectionDivider variant="gold-line" />
         
         {/* Teaser sections */}
-        <div className="bg-[#0F0F1E]">
+        {/* <div className="bg-[#0F0F1E]">
           <div className="max-w-7xl mx-auto py-24 px-6 text-center">
             <h2 
               className="text-3xl md:text-5xl font-light text-[#E8D5B7] mb-12"
@@ -35,7 +35,7 @@ export default function Home() {
             </h2>
             <Experiences />
           </div>
-        </div>
+        </div> */}
 
         <SectionDivider variant="ornament" />
         <Testimonials />

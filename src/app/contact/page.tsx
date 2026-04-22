@@ -7,20 +7,6 @@ import SectionDivider from '@/components/saharian/SectionDivider'
 export default function ContactPage() {
   return (
     <main className="pt-24 min-h-screen bg-[#0F0F1E]">
-      <div className="py-20 text-center">
-        <h1 
-          className="text-5xl md:text-7xl font-light text-[#E8D5B7] mb-6"
-          style={{ fontFamily: "'Playfair Display', serif" }}
-        >
-          Begin Your <span className="text-[#C4A35A]">Journey</span>
-        </h1>
-        <p 
-          className="text-[#D4C4A8]/70 max-w-2xl mx-auto px-6 text-lg"
-          style={{ fontFamily: "'Amiri', serif" }}
-        >
-          Have questions or ready to book your escape? Our team is here to help you plan the perfect Saharian experience.
-        </p>
-      </div>
       <SectionDivider variant="compass" />
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 py-12">
         <div className="space-y-12">

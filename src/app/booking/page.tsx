@@ -5,23 +5,19 @@ import SectionDivider from '@/components/saharian/SectionDivider'
 
 export default function BookingPage() {
   return (
-    <main className="pt-24 min-h-screen bg-[#0F0F1E]">
-      <div className="py-20 text-center">
-        <h1 
-          className="text-5xl md:text-7xl font-light text-[#E8D5B7] mb-6"
-          style={{ fontFamily: "'Playfair Display', serif" }}
-        >
-          Your <span className="text-[#C4A35A]">Saharian</span> Escape
-        </h1>
-        <p 
-          className="text-[#D4C4A8]/70 max-w-2xl mx-auto px-6 text-lg"
-          style={{ fontFamily: "'Amiri', serif" }}
-        >
-          Select your experience, pick your dates, and let us handle the rest. Your journey into the heart of the dunes starts here.
-        </p>
+    <main className="min-h-screen bg-[#0F0F1E] flex flex-col relative overflow-visible">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(196,163,90,0.05),transparent)]" />
       </div>
-      <SectionDivider variant="compass" />
-      <BookingFlow />
+
+      <div className="relative z-10 flex-1 flex flex-col pt-32 pb-20 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto w-full flex flex-col">
+          <div className="relative">
+            <BookingFlow />
+          </div>
+        </div>
+      </div>
     </main>
   )
 }

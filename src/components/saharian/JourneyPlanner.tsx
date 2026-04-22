@@ -66,10 +66,10 @@ export default function JourneyPlanner() {
   }
 
   return (
-    <section id="journey" className="py-24 md:py-32 px-6 desert-gradient relative">
+    <section id="journey" className="py-16 md:py-24 px-6 desert-gradient relative">
       <div className="max-w-4xl mx-auto">
         {/* Section header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <motion.span
             className="text-[#C4A35A] text-xs tracking-[0.5em] uppercase block mb-6"
             style={{ fontFamily: "'Amiri', serif" }}

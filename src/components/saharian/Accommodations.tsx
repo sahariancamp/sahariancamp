@@ -83,13 +83,13 @@ export default function Accommodations() {
   const currentTent = tentTypes[activeTent]
 
   return (
-    <section id="accommodations" ref={containerRef} className="py-24 md:py-32 px-6 relative overflow-hidden">
+    <section id="accommodations" ref={containerRef} className="py-16 md:py-24 px-6 relative overflow-hidden">
       {/* Background gradient */}
       <div className={`absolute inset-0 transition-all duration-1000 ${isNight ? 'night-sky-gradient' : 'desert-gradient'}`} />
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section header */}
-        <div className="text-center mb-16 md:mb-24">
+        <div className="text-center mb-10 md:mb-16">
           <motion.span
             className="text-[#C4A35A] text-xs tracking-[0.5em] uppercase block mb-6"
             style={{ fontFamily: "'Amiri', serif" }}
@@ -160,7 +160,7 @@ export default function Accommodations() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left: Image with parallax */}
           <motion.div className="relative" style={{ y: imageY }}>
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
+            <div className="relative aspect-video rounded-2xl overflow-hidden">
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-1000"
                 style={{ backgroundImage: `url('${currentTent.image}')` }}
