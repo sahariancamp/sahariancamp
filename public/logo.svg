@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Outer circle -->
+  <circle cx="50" cy="50" r="46" stroke="#C4A35A" stroke-width="1.5" fill="none"/>
+  
+  <!-- Inner circle -->
+  <circle cx="50" cy="50" r="38" stroke="#C4A35A" stroke-width="0.5" fill="none"/>
+  
+  <!-- Dune silhouette -->
+  <path d="M8 65 Q20 40 35 50 Q45 55 50 45 Q55 35 65 48 Q75 55 92 40" stroke="#C4A35A" stroke-width="1.5" fill="none"/>
+  <path d="M8 70 Q25 50 40 58 Q50 62 60 52 Q70 45 92 55" stroke="#C4A35A" stroke-width="0.8" fill="none" opacity="0.5"/>
+  
+  <!-- Star -->
+  <circle cx="50" cy="25" r="2" fill="#C4A35A"/>
+  <line x1="50" y1="20" x2="50" y2="30" stroke="#C4A35A" stroke-width="0.5" opacity="0.5"/>
+  <line x1="45" y1="25" x2="55" y2="25" stroke="#C4A35A" stroke-width="0.5" opacity="0.5"/>
+  
+  <!-- Small stars -->
+  <circle cx="30" cy="22" r="0.8" fill="#C4A35A" opacity="0.5"/>
+  <circle cx="70" cy="20" r="0.8" fill="#C4A35A" opacity="0.5"/>
+  <circle cx="25" cy="30" r="0.5" fill="#C4A35A" opacity="0.3"/>
+  <circle cx="75" cy="28" r="0.5" fill="#C4A35A" opacity="0.3"/>
+  
+  <!-- Tent shape -->
+  <path d="M42 55 L50 40 L58 55" stroke="#C4A35A" stroke-width="1" fill="none"/>
+  <line x1="50" y1="40" x2="50" y2="55" stroke="#C4A35A" stroke-width="0.5" opacity="0.3"/>
+</svg>
