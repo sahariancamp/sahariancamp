@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import LenisProvider from "@/components/saharian/LenisProvider";
+import CustomCursor from "@/components/saharian/CustomCursor";
+import ScrollProgress from "@/components/saharian/ScrollProgress";
+import Navbar from "@/components/saharian/Navbar";
+import Footer from "@/components/saharian/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,7 +50,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0F0F1E] text-[#E8D5B7]`}
       >
-        {children}
+        <LenisProvider>
+          <CustomCursor />
+          <ScrollProgress />
+          <div className="sand-grain-overlay" />
+          <Navbar />
+          {children}
+          <Footer />
+        </LenisProvider>
         <Toaster />
       </body>
     </html>

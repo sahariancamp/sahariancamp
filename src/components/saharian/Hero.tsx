@@ -5,7 +5,9 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
@@ -32,18 +34,34 @@ export default function Hero() {
     <section ref={containerRef} className="relative h-screen overflow-hidden" id="hero">
       {/* Background image with parallax */}
       <motion.div className="absolute inset-0" style={{ y, scale }}>
-        {/* Fallback gradient in case image doesn't load */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1A2E] via-[#2A1A0A] to-[#0F0F1E]" />
+        {/* Fallback gradient and Poster Image (LCP optimized) */}
+        <div className="absolute inset-0 bg-[#0A0A1A]" />
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${isVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
           style={{
             backgroundImage: "url('/images/hero-desert.png')",
             transform: `translate(${mousePos.x}px, ${mousePos.y}px) scale(1.1)`,
-            transition: 'transform 0.3s ease-out',
           }}
         />
+
+        {/* Background Video - Loaded lazily */}
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          onCanPlay={() => setIsVideoLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
+          style={{
+            transform: `translate(${mousePos.x}px, ${mousePos.y}px) scale(1.1)`,
+          }}
+        >
+          <source src="/video/hero-video.webm" type="video/webm" />
+        </video>
+
         {/* Dark gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A1A]/60 via-[#0A0A1A]/20 to-[#0F0F1E]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A1A]/70 via-[#0A0A1A]/30 to-[#0F0F1E]" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A1A]/40 via-transparent to-[#0A0A1A]/40" />
         {/* Warm golden glow at center bottom */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[40%] bg-[#C4A35A]/5 rounded-full blur-3xl" />
@@ -62,7 +80,7 @@ export default function Hero() {
           className="flex items-center gap-4 mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.8, duration: 1 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
         >
           <div className="w-12 h-[1px] bg-[#C4A35A]/40" />
           <span
@@ -87,10 +105,10 @@ export default function Hero() {
                 color: i === 2 || i === 3 ? '#C4A35A' : '#E8D5B7',
                 lineHeight: 1.1,
               }}
-              initial={{ opacity: 0, y: 60, rotateX: -40 }}
-              animate={{ opacity: 1, y: 0, rotateX: 0 }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{
-                delay: 3.0 + i * 0.12,
+                delay: 0.4 + i * 0.1,
                 duration: 0.8,
                 ease: [0.25, 0.46, 0.45, 0.94],
               }}
@@ -104,9 +122,9 @@ export default function Hero() {
         <motion.p
           className="mt-8 text-[#D4C4A8]/70 max-w-lg text-base md:text-lg tracking-wide"
           style={{ fontFamily: "'Amiri', serif" }}
-          initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ delay: 3.6, duration: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 1 }}
         >
           Luxury camp at the edge of the impossible
         </motion.p>
@@ -116,7 +134,7 @@ export default function Hero() {
           className="mt-8 w-24 h-[1px] bg-gradient-to-r from-transparent via-[#C4A35A] to-transparent"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ delay: 4.0, duration: 1 }}
+          transition={{ delay: 1.2, duration: 1 }}
         />
 
         {/* CTA Button */}
@@ -125,7 +143,7 @@ export default function Hero() {
           style={{ fontFamily: "'Amiri', serif" }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 4.3, duration: 0.8 }}
+          transition={{ delay: 1.4, duration: 0.8 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => document.querySelector('#camp')?.scrollIntoView({ behavior: 'smooth' })}
@@ -137,7 +155,7 @@ export default function Hero() {
 
         {/* Scroll indicator */}
         <motion.div
-          className="absolute bottom-12 flex flex-col items-center gap-3"
+          className="absolute bottom-8  flex flex-col items-center gap-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 4.8, duration: 1 }}

@@ -18,13 +18,13 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
           setShowText(true)
           setTimeout(() => {
             setIsExiting(true)
-            setTimeout(onComplete, 600)
-          }, 1000)
+            setTimeout(onComplete, 300)
+          }, 200)
           return 100
         }
-        return prev + 3
+        return prev + 5
       })
-    }, 40)
+    }, 20)
 
     // Sand grain animation on canvas
     const canvas = canvasRef.current
@@ -79,7 +79,7 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
         <motion.div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0A0A1A]"
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <canvas ref={canvasRef} className="absolute inset-0" />
           

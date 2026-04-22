@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { MessageCircle, Instagram, Facebook, Mail, ArrowUp } from 'lucide-react'
+import Link from 'next/link'
 
 const starConstellation = [
   // North Star + nearby
@@ -56,15 +57,30 @@ const socialLinks = [
 const footerLinks = [
   {
     title: 'Camp',
-    links: ['About Us', 'The Tents', 'Dining', 'Sustainability'],
+    links: [
+      { label: 'About Us', href: '/' },
+      { label: 'The Tents', href: '/tents' },
+      { label: 'Gallery', href: '/gallery' },
+      { label: 'Sustainability', href: '/' },
+    ],
   },
   {
     title: 'Experience',
-    links: ['Camel Trekking', 'Quad Biking', 'Stargazing', 'Wellness'],
+    links: [
+      { label: 'Camel Trekking', href: '/activities' },
+      { label: 'Buggy Adrenaline', href: '/activities' },
+      { label: 'Stargazing', href: '/activities' },
+      { label: 'Wellness', href: '/activities' },
+    ],
   },
   {
     title: 'Practical',
-    links: ['Getting Here', 'FAQ', 'Weather', 'Packing List'],
+    links: [
+      { label: 'Contact Us', href: '/contact' },
+      { label: 'FAQ', href: '/contact' },
+      { label: 'Weather', href: '/contact' },
+      { label: 'Location', href: '/contact' },
+    ],
   },
 ]
 
@@ -321,14 +337,14 @@ export default function Footer() {
               </h4>
               <ul className="space-y-2">
                 {section.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
                       className="text-[#D4C4A8]/40 hover:text-[#D4C4A8] text-sm transition-colors"
                       data-cursor-hover
                     >
-                      {link}
-                    </a>
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
