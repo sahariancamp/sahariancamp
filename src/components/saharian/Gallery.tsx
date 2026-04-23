@@ -1,41 +1,34 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { Maximize2, X } from 'lucide-react'
+import { fetchGallery } from '@/lib/api'
 
 const categories = ['Sanctuaries', 'Experiences', 'Camp Life']
 
-const galleryImages = [
-  // Sanctuaries
-  { id: 2, category: 'Sanctuaries', src: '/images/gallery/luxury-bedroom-view.jpg', title: 'Royal Suite Sanctuary' },
-  { id: 4, category: 'Sanctuaries', src: '/images/gallery/family-triple-tent.jpg', title: 'Family Triple Suite' },
-  { id: 5, category: 'Sanctuaries', src: '/images/gallery/twin-deluxe-tent.jpg', title: 'Deluxe Twin Room' },
-  { id: 6, category: 'Sanctuaries', src: '/images/gallery/traditional-twin-tent.jpg', title: 'Berber Traditional Suite' },
-  { id: 12, category: 'Sanctuaries', src: '/images/gallery/quadruple-family-suite.jpg', title: 'Sahara Family Lodge' },
-  { id: 3, category: 'Sanctuaries', src: '/images/gallery/private-bathroom-tent.jpg', title: 'Luxury Private Bath' },
-  { id: 9, category: 'Sanctuaries', src: '/images/gallery/modern-bathroom-interior.jpg', title: 'Modern Bath Amenities' },
-  { id: 10, category: 'Sanctuaries', src: '/images/gallery/vanity-mirror-tent.jpg', title: 'Tent Vanity Space' },
-  { id: 11, category: 'Sanctuaries', src: '/images/gallery/luxury-bathroom-detail.jpg', title: 'Artisan Bath Design' },
-  { id: 16, category: 'Sanctuaries', src: '/images/gallery/luxury-shower-unit.jpg', title: 'Luxury Desert Shower' },
-  { id: 15, category: 'Sanctuaries', src: '/images/gallery/luxury-toiletries-setup.jpg', title: 'Handcrafted Amenities' },
-  
-  // Experiences
-  { id: 1, category: 'Experiences', src: '/images/gallery/welcome-drinks-tray.jpg', title: 'Welcome Refreshments' },
-  { id: 7, category: 'Experiences', src: '/images/gallery/authentic-moroccan-dinner.jpg', title: 'Moroccan Gastronomy' },
-  { id: 8, category: 'Experiences', src: '/images/gallery/family-dining-experience.jpg', title: 'Communal Dining' },
-  
-  // Camp Life
-  { id: 13, category: 'Camp Life', src: '/images/gallery/camp-aerial-layout.jpg', title: 'Saharian Camp Estate' },
-  { id: 14, category: 'Camp Life', src: '/images/gallery/sunset-lounge-area.jpg', title: 'Sunset Relaxation Lounge' },
-]
-
-export default function Gallery() {
+export default function Gallery({ initialData = [] }: { initialData?: any[] }) {
+  const [items, setItems] = useState<any[]>(initialData)
   const [activeCategory, setActiveCategory] = useState('Sanctuaries')
-  const [selectedImage, setSelectedImage] = useState<typeof galleryImages[0] | null>(null)
+  const [selectedImage, setSelectedImage] = useState<any | null>(null)
+  const [loading, setLoading] = useState(initialData.length === 0)
 
-  const filteredImages = galleryImages.filter(img => img.category === activeCategory)
+  useEffect(() => {
+    if (initialData.length === 0) {
+      fetchGallery().then(data => {
+        setItems(data)
+        setLoading(false)
+      }).catch(err => {
+        console.error(err)
+        setLoading(false)
+      })
+    }
+  }, [initialData])
+
+  const filteredImages = items.filter(img => img.category === activeCategory && img.image_url)
+
+  if (loading) return <div className="text-center py-24 text-[#C4A35A]">Invoking Visual Poetry...</div>
 
   return (
     <section className="py-12 bg-[#0F0F1E]">
@@ -99,7 +92,7 @@ export default function Gallery() {
               >
                 <div className="aspect-[4/5] bg-[#1A1A2E] overflow-hidden">
                   <Image
-                    src={image.src}
+                    src={image.image_url}
                     alt={image.title}
                     width={800}
                     height={1000}
@@ -152,7 +145,7 @@ export default function Gallery() {
               onClick={(e) => e.stopPropagation()}
             >
               <Image
-                src={selectedImage.src}
+                src={selectedImage.image_url}
                 alt={selectedImage.title}
                 width={1920}
                 height={1080}

@@ -31,6 +31,16 @@ export async function fetchActivities() {
   }
 }
 
+export async function fetchGallery() {
+  try {
+    const response = await api.get('/gallery');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching gallery:', error);
+    throw error;
+  }
+}
+
 export async function createBooking(data: any) {
   try {
     const response = await api.post('/bookings', data);

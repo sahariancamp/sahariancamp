@@ -18,7 +18,12 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
   const [activeTent, setActiveTent] = useState(0)
   const [isNight, setIsNight] = useState(false)
   const [loading, setLoading] = useState(initialData.length === 0)
+  const [isMounted, setIsMounted] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     if (initialData.length === 0) {
@@ -33,7 +38,7 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
   }, [initialData])
 
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: isMounted ? containerRef : undefined,
     offset: ['start end', 'end start'],
   })
 
@@ -158,10 +163,10 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
                 </div>
               )}
 
-              {/* Price badge */}
+              {/* Price badge removed as per request */}
               <div className="absolute bottom-4 right-4 px-4 py-2 rounded-full bg-[#0F0F1E]/80 backdrop-blur-sm border border-[#C4A35A]/20">
                 <span className="text-[#C4A35A] text-sm font-light" style={{ fontFamily: "'Amiri', serif" }}>
-                  {currentTent.price_per_night ? `$${currentTent.price_per_night} / night` : 'Check Availability'}
+                  Check Availability
                 </span>
               </div>
 
@@ -233,7 +238,7 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {currentTent.features.map((feature, i) => (
+                {currentTent.features.map((feature: string, i: number) => (
                   <div key={i} className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-[#C4A35A]" />
                     <span className="text-[#D4C4A8]/60 text-sm">{feature}</span>

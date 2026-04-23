@@ -16,11 +16,9 @@ interface ClientHomeProps {
 }
 
 export default function ClientHome({ initialTents, initialActivities }: ClientHomeProps) {
-  const [preloaderComplete, setPreloaderComplete] = useState(false)
 
   return (
     <>
-      <Preloader onComplete={() => setPreloaderComplete(true)} />
 
       <main className="relative">
         <Hero />
@@ -37,7 +35,6 @@ export default function ClientHome({ initialTents, initialActivities }: ClientHo
 
         <SectionDivider variant="compass" />
         <Testimonials />
-        <Footer />
       </main>
     </>
   )

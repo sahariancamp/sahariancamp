@@ -249,7 +249,7 @@ export default function BookingFlow() {
                     </div>
                     <div className="p-3 bg-[#1A1A2E]/90 backdrop-blur-sm text-left">
                       <h4 className="text-[#E8D5B7] text-sm font-medium">{item.name}</h4>
-                      <p className="text-[#C4A35A] text-[10px] uppercase tracking-wider">From €{item.price_per_night || item.price_per_person}</p>
+                      <p className="text-[#C4A35A] text-[10px] uppercase tracking-wider">Available Upon Request</p>
                     </div>
                   </button>
                 ))}
@@ -315,8 +315,8 @@ export default function BookingFlow() {
                     <span>{formData.date}</span>
                   </div>
                   <div className="flex justify-between text-lg border-t border-[#C4A35A]/10 pt-3 mt-3">
-                    <span className="text-[#E8D5B7] font-light">Total Estimate</span>
-                    <span className="text-[#C4A35A]">€{calculateTotal()}</span>
+                    <span className="text-[#E8D5B7] font-light">Price Quote</span>
+                    <span className="text-[#C4A35A]">Upon Request</span>
                   </div>
                 </div>
 

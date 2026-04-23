@@ -1,12 +1,15 @@
-'use client'
-
+import { fetchActivities } from '@/lib/api'
 import Experiences from '@/components/saharian/Experiences'
-import SectionDivider from '@/components/saharian/SectionDivider'
 
-export default function ActivitiesPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function ActivitiesPage() {
+  // Fetch data on the server for SEO
+  const activities = await fetchActivities()
+
   return (
     <main className="pt-24 min-h-screen bg-[#0F0F1E]">
-      <Experiences />
+      <Experiences initialData={activities} />
     </main>
   )
 }

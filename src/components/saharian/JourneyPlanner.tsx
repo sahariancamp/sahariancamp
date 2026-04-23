@@ -320,7 +320,7 @@ export default function JourneyPlanner() {
                             {exp.name}
                           </p>
                           <p className="text-[#8A8A9E] text-xs mt-1">
-                            {exp.price === 0 ? 'Complimentary' : `€${exp.price} per person`}
+                            {exp.price === 0 ? 'Complimentary' : 'Included in Quote'}
                           </p>
                         </div>
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
@@ -378,7 +378,7 @@ export default function JourneyPlanner() {
                           {point.price > 0 && (
                             <>
                               <span>•</span>
-                              <span className="text-[#C4A35A]">+€{point.price}/person</span>
+                              <span className="text-[#C4A35A]">Upon Request</span>
                             </>
                           )}
                         </div>
@@ -400,32 +400,28 @@ export default function JourneyPlanner() {
                     <div className="space-y-3 mb-6">
                       <div className="flex justify-between text-sm">
                         <span className="text-[#D4C4A8]/60">Accommodation ({nights} nights)</span>
-                        <span className="text-[#E8D5B7]">€{accommodationTotal}</span>
+                        <span className="text-[#E8D5B7]">Included</span>
                       </div>
                       {experienceTotal > 0 && (
                         <div className="flex justify-between text-sm">
                           <span className="text-[#D4C4A8]/60">Experiences ({selectedExperiences.length} selected)</span>
-                          <span className="text-[#E8D5B7]">€{experienceTotal}</span>
+                          <span className="text-[#E8D5B7]">Included</span>
                         </div>
                       )}
                       {transportTotal > 0 && (
                         <div className="flex justify-between text-sm">
                           <span className="text-[#D4C4A8]/60">Transport from {departurePoints.find(d => d.id === departure)?.name}</span>
-                          <span className="text-[#E8D5B7]">€{transportTotal}</span>
+                          <span className="text-[#E8D5B7]">Included</span>
                         </div>
                       )}
                       <div className="golden-line my-4" />
                       <div className="flex justify-between">
-                        <span className="text-[#E8D5B7] font-medium">Total Estimate</span>
+                        <span className="text-[#E8D5B7] font-medium">Total Price</span>
                         <motion.span
                           className="text-2xl text-[#C4A35A] font-light"
                           style={{ fontFamily: "'Playfair Display', serif" }}
-                          key={totalPrice}
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ type: 'spring', stiffness: 200 }}
                         >
-                          €{totalPrice}
+                          Upon Request
                         </motion.span>
                       </div>
                     </div>
