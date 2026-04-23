@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'sahariancamp.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8000',
       }
     ],
   },

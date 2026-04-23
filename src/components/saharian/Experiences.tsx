@@ -1,72 +1,12 @@
 'use client'
 
-import { useState, useRef, MouseEvent } from 'react'
+import { useState, useRef, MouseEvent, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { fetchActivities } from '@/lib/api'
 
-const experiences = [
-  {
-    id: 'camel',
-    title: 'Dromedary Ride through Dunes',
-    subtitle: 'Silhouettes at sunset',
-    description: 'Experience the tranquility of the desert on a dromedary ride through the dunes. These majestic creatures are perfectly adapted to the harsh desert environment. Watch the sun set over the dunes as you ride into the heart of the Sahara.',
-    image: '/images/camel-trek.png',
-    duration: '1-2 hours',
-    difficulty: 'Easy',
-    color: '#C4A35A',
-  },
-  {
-    id: 'buggy',
-    title: 'Buggy Adrenaline',
-    subtitle: 'Adrenaline on sand',
-    description: 'For those seeking an adrenaline rush, a desert buggy ride is an absolute must. These powerful vehicles are perfectly suited for navigating the challenging terrain of the Sahara, allowing you to experience the thrill of speeding across the dunes.',
-    image: '/images/quad-biking.png',
-    duration: '1-3 hours',
-    difficulty: 'Moderate',
-    color: '#D4763C',
-  },
-  {
-    id: 'sandboard',
-    title: 'Dunes Board',
-    subtitle: 'Surf the Sahara',
-    description: 'For a unique and adventurous experience, try dunes boarding. This exciting activity involves sliding down the steep slopes of the dunes on a specially designed board, similar to snowboarding. Feel the rush of adrenaline as you carve your way down.',
-    image: '/images/sunrise-yoga.png',
-    duration: '1-2 hours',
-    difficulty: 'Moderate',
-    color: '#E8D5A0',
-  },
-  {
-    id: 'drums',
-    title: 'Drums Rhythm Show',
-    subtitle: 'Rhythm of the desert',
-    description: 'Enjoy a captivating evening of traditional music and dance at a drums rhythm show. Lose yourself in the rhythmic beats and vibrant energy as local musicians and dancers showcase their skills under the starry night sky.',
-    image: '/images/berber-music.png',
-    duration: 'Evening',
-    difficulty: 'Joyful',
-    color: '#2D5A4A',
-  },
-  {
-    id: 'villages',
-    title: 'Deep Desert Villages Day Tour',
-    subtitle: 'Cultural Immersion',
-    description: 'Venture off the beaten path and discover the hidden gems of the Sahara Desert. Immerse yourself in the local culture as you visit traditional Berber villages, interact with friendly locals, and learn about their way of life.',
-    image: '/images/dining-stars.png',
-    duration: 'Half or Full Day',
-    difficulty: 'Easy',
-    color: '#D4C4A8',
-  },
-  {
-    id: 'custom',
-    title: 'Customized Travel Programs',
-    subtitle: 'Tailored for you',
-    description: 'Looking for a more personalized experience? Merzouga offers a variety of customized travel programs tailored to your specific interests and preferences. From luxury camping under the stars to cultural immersion tours.',
-    image: '/images/hero-desert.png',
-    duration: 'Flexible',
-    difficulty: 'All levels',
-    color: '#8A8A9E',
-  },
-]
+// Data fetched from API
 
-function TiltCard({ experience, onClick }: { experience: typeof experiences[0]; onClick: () => void }) {
+function TiltCard({ experience, onClick }: { experience: any; onClick: () => void }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
 
@@ -105,14 +45,14 @@ function TiltCard({ experience, onClick }: { experience: typeof experiences[0]; 
         <div className="relative h-40 md:h-48 overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-            style={{ backgroundImage: `url('${experience.image}')` }}
+            style={{ backgroundImage: `url('${experience.image_url}')` }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A2E] via-transparent to-transparent" />
           
           {/* Color accent bar */}
           <div
             className="absolute top-0 left-0 right-0 h-1"
-            style={{ backgroundColor: experience.color }}
+            style={{ backgroundColor: experience.color || '#C4A35A' }}
           />
           
           {/* Duration badge */}
@@ -127,15 +67,15 @@ function TiltCard({ experience, onClick }: { experience: typeof experiences[0]; 
         <div className="p-6 tilt-card-content">
           <p
             className="text-xs tracking-[0.3em] uppercase mb-2"
-            style={{ color: experience.color, fontFamily: "'Amiri', serif" }}
+            style={{ color: experience.color || '#C4A35A', fontFamily: "'Amiri', serif" }}
           >
-            {experience.subtitle}
+            {experience.subtitle || 'Experience'}
           </p>
           <h3
             className="text-xl md:text-2xl font-light text-[#E8D5B7] mb-3"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            {experience.title}
+            {experience.name}
           </h3>
           <p className="text-[#D4C4A8]/60 text-sm line-clamp-2 leading-relaxed">
             {experience.description}
@@ -143,7 +83,7 @@ function TiltCard({ experience, onClick }: { experience: typeof experiences[0]; 
           <div className="mt-4 flex items-center gap-2 group/btn">
             <span
               className="text-xs tracking-wider uppercase"
-              style={{ color: experience.color, fontFamily: "'Amiri', serif" }}
+              style={{ color: experience.color || '#C4A35A', fontFamily: "'Amiri', serif" }}
             >
               Discover more
             </span>
@@ -161,8 +101,30 @@ function TiltCard({ experience, onClick }: { experience: typeof experiences[0]; 
   )
 }
 
-export default function Experiences() {
-  const [selectedExperience, setSelectedExperience] = useState<typeof experiences[0] | null>(null)
+export default function Experiences({ initialData = [] }: { initialData?: any[] }) {
+  const [experiences, setExperiences] = useState<any[]>(initialData)
+  const [selectedExperience, setSelectedExperience] = useState<any | null>(null)
+  const [loading, setLoading] = useState(initialData.length === 0)
+
+  useEffect(() => {
+    if (initialData.length === 0) {
+      fetchActivities().then(data => {
+        setExperiences(data)
+        setLoading(false)
+      }).catch(err => {
+        console.error(err)
+        setLoading(false)
+      })
+    }
+  }, [initialData])
+
+  if (loading || experiences.length === 0) {
+    return (
+      <section id="experiences" className="py-16 text-center text-[#E8D5B7] desert-gradient">
+        <div className="animate-pulse">Loading Rituals...</div>
+      </section>
+    )
+  }
 
   return (
     <section id="experiences" className="py-16 md:py-24 px-6 desert-gradient">
@@ -234,12 +196,12 @@ export default function Experiences() {
               <div className="relative h-64 md:h-80">
                 <div
                   className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url('${selectedExperience.image}')` }}
+                  style={{ backgroundImage: `url('${selectedExperience.image_url}')` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A2E] via-[#1A1A2E]/50 to-transparent" />
                 <div
                   className="absolute top-0 left-0 right-0 h-1"
-                  style={{ backgroundColor: selectedExperience.color }}
+                  style={{ backgroundColor: selectedExperience.color || '#C4A35A' }}
                 />
                 <button
                   className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#0F0F1E]/70 backdrop-blur-sm flex items-center justify-center text-[#D4C4A8] hover:text-[#C4A35A] transition-colors"
@@ -253,15 +215,15 @@ export default function Experiences() {
               <div className="p-8">
                 <p
                   className="text-xs tracking-[0.3em] uppercase mb-2"
-                  style={{ color: selectedExperience.color, fontFamily: "'Amiri', serif" }}
+                  style={{ color: selectedExperience.color || '#C4A35A', fontFamily: "'Amiri', serif" }}
                 >
-                  {selectedExperience.subtitle}
+                  {selectedExperience.subtitle || 'Experience'}
                 </p>
                 <h3
                   className="text-3xl md:text-4xl font-light text-[#E8D5B7] mb-4"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  {selectedExperience.title}
+                  {selectedExperience.name}
                 </h3>
                 <p className="text-[#D4C4A8]/70 text-base leading-relaxed mb-6">
                   {selectedExperience.description}

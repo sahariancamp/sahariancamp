@@ -9,11 +9,11 @@ import { usePathname } from 'next/navigation'
 
 const navLinks = [
   { label: 'The Camp', href: '/' },
-  // { label: 'Sanctuaries', href: '/tents' },
-  // { label: 'Experiences', href: '/activities' },
-  // { label: 'Gallery', href: '/gallery' },
-  // { label: 'Booking', href: '/booking' },
-  // { label: 'Contact', href: '/contact' },
+  { label: 'Sanctuaries', href: '/tents' },
+  { label: 'Experiences', href: '/activities' },
+  { label: 'Gallery', href: '/gallery' },
+  { label: 'Booking', href: '/booking' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 export default function Navbar() {
@@ -75,14 +75,14 @@ export default function Navbar() {
           </div>
 
           {/* Book CTA */}
-          {/* <Link
+          <Link
             href="/booking"
             className="hidden lg:block magnetic-btn px-6 py-2 border border-[#C4A35A]/40 text-[#C4A35A] text-xs tracking-[0.2em] uppercase rounded-full hover:bg-[#C4A35A]/10 transition-all text-center"
             style={{ fontFamily: "'Amiri', serif" }}
             data-cursor-hover
           >
             Reserve
-          </Link> */}
+          </Link>
 
           {/* Mobile menu button */}
           <button
@@ -129,13 +129,13 @@ export default function Navbar() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
               >
-                {/* <Link
+                <Link
                   href="/booking"
                   className="mt-4 px-8 py-3 border border-[#C4A35A]/40 text-[#C4A35A] text-sm tracking-[0.2em] uppercase rounded-full inline-block"
                   style={{ fontFamily: "'Amiri', serif" }}
                 >
                   Reserve Your Journey
-                </Link> */}
+                </Link>
               </motion.div>
             </div>
           </motion.div>

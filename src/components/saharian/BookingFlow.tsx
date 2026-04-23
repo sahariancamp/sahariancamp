@@ -5,23 +5,27 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Users, Sparkles, Tent, ArrowRight, ChevronLeft, Check, Send } from 'lucide-react'
 import Image from 'next/image'
 
-const tentTypes = [
-  { id: 'quadruple', name: 'Quadruple Deluxe Tent', price: 320, image: '/images/gallery/quadruple-family-suite.jpg' },
-  { id: 'family', name: 'Family Deluxe Tent', price: 380, image: '/images/gallery/family-triple-tent.jpg' },
-  { id: 'triple', name: 'Triple Deluxe Tent', price: 280, image: '/images/gallery/traditional-twin-tent.jpg' },
-  { id: 'double', name: 'Double Deluxe Tent', price: 220, image: '/images/gallery/luxury-bedroom-view.jpg' },
-  { id: 'single', name: 'Single Deluxe Tent', price: 150, image: '/images/gallery/twin-deluxe-tent.jpg' },
-]
-
-const activityOptions = [
-  { id: 'camel', name: 'Dromedary Ride', price: 45, image: '/images/gallery/camp-aerial-layout.jpg' },
-  { id: 'buggy', name: 'Buggy Adrenaline', price: 85, image: '/images/gallery/sunset-lounge-area.jpg' },
-  { id: 'sandboard', name: 'Dunes Boarding', price: 30, image: '/images/gallery/camp-aerial-layout.jpg' },
-  { id: 'drums', name: 'Drums Rhythm Show', price: 25, image: '/images/gallery/authentic-moroccan-dinner.jpg' },
-]
+import { useEffect } from 'react'
+import { fetchTents, fetchActivities, createBooking } from '@/lib/api'
 
 export default function BookingFlow() {
+  const [tentTypes, setTentTypes] = useState<any[]>([])
+  const [activityOptions, setActivityOptions] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
   const [step, setStep] = useState(1) // 1: Type, 2: Dates/Who, 3: Selection, 4: Finalize
+
+  useEffect(() => {
+    Promise.all([fetchTents(), fetchActivities()]).then(([tents, acts]) => {
+      setTentTypes(tents)
+      setActivityOptions(acts)
+      setLoading(false)
+    }).catch(err => {
+      console.error(err)
+      setLoading(false)
+    })
+  }, [])
+
   const [bookingType, setBookingType] = useState<'stay' | 'activity' | null>(null)
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [formData, setFormData] = useState({
@@ -33,6 +37,32 @@ export default function BookingFlow() {
     email: '',
     phone: '',
   })
+
+  const handleBookingSubmit = async () => {
+    setSubmitting(true)
+    try {
+      const payload = {
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        check_in: formData.date,
+        total_price: calculateTotal(),
+        notes: `Nights: ${formData.nights}, Adults: ${formData.adults}, Children: ${formData.children}, Type: ${bookingType}`,
+      }
+      await createBooking(payload)
+      alert('Request sent successfully! Our team will contact you soon.')
+      setStep(1)
+      setSelectedItems([])
+    } catch (error) {
+      console.error(error)
+      alert('Failed to send request. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (loading) return <div className="text-center py-10 text-[#C4A35A]">Preparing Booking Engine...</div>
+
 
   const nextStep = () => setStep(prev => prev + 1)
   const prevStep = () => setStep(prev => prev - 1)
@@ -49,12 +79,12 @@ export default function BookingFlow() {
 
   const calculateTotal = () => {
     if (bookingType === 'stay') {
-      const tent = tentTypes.find(t => t.id === selectedItems[0])
-      return (tent?.price || 0) * formData.nights
+      const tent = tentTypes.find(t => t.id === selectedItems[0] || t.slug === selectedItems[0])
+      return (tent?.price_per_night || 0) * formData.nights
     } else {
       return selectedItems.reduce((acc, id) => {
-        const act = activityOptions.find(a => a.id === id)
-        return acc + (act?.price || 0) * (formData.adults + formData.children)
+        const act = activityOptions.find(a => a.id === id || a.slug === id)
+        return acc + (act?.price_per_person || 0) * (formData.adults + formData.children)
       }, 0)
     }
   }
@@ -203,15 +233,15 @@ export default function BookingFlow() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(bookingType === 'stay' ? tentTypes : activityOptions).map((item) => (
                   <button
-                    key={item.id}
-                    onClick={() => toggleItem(item.id)}
+                    key={item.id || item.slug}
+                    onClick={() => toggleItem(item.id || item.slug)}
                     className={`group relative rounded-2xl overflow-hidden border transition-all ${
-                      selectedItems.includes(item.id) ? 'border-[#C4A35A] ring-1 ring-[#C4A35A]' : 'border-[#C4A35A]/10 hover:border-[#C4A35A]/40'
+                      selectedItems.includes(item.id || item.slug) ? 'border-[#C4A35A] ring-1 ring-[#C4A35A]' : 'border-[#C4A35A]/10 hover:border-[#C4A35A]/40'
                     }`}
                   >
                     <div className="relative h-32">
-                      <Image src={item.image} alt={item.name} fill className="object-cover" />
-                      {selectedItems.includes(item.id) && (
+                      <Image src={item.image_url || '/images/hero-desert.png'} alt={item.name} fill className="object-cover" />
+                      {selectedItems.includes(item.id || item.slug) && (
                         <div className="absolute inset-0 bg-[#C4A35A]/20 flex items-center justify-center">
                           <Check className="w-8 h-8 text-[#C4A35A]" />
                         </div>
@@ -219,7 +249,7 @@ export default function BookingFlow() {
                     </div>
                     <div className="p-3 bg-[#1A1A2E]/90 backdrop-blur-sm text-left">
                       <h4 className="text-[#E8D5B7] text-sm font-medium">{item.name}</h4>
-                      <p className="text-[#C4A35A] text-[10px] uppercase tracking-wider">From €{item.price}</p>
+                      <p className="text-[#C4A35A] text-[10px] uppercase tracking-wider">From €{item.price_per_night || item.price_per_person}</p>
                     </div>
                   </button>
                 ))}
@@ -293,10 +323,11 @@ export default function BookingFlow() {
                 <div className="flex gap-3">
                   <button onClick={prevStep} className="px-6 py-3 rounded-full border border-[#C4A35A]/20 text-[#8A8A9E] text-sm">Back</button>
                   <button 
-                    className="flex-1 bg-[#C4A35A] text-[#0F0F1E] py-3 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-[#E8D5A0] transition-all text-sm"
-                    onClick={() => alert('Request sent successfully!')}
+                    className="flex-1 bg-[#C4A35A] text-[#0F0F1E] py-3 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-[#E8D5A0] transition-all text-sm disabled:opacity-50"
+                    onClick={handleBookingSubmit}
+                    disabled={submitting || !formData.name || !formData.email}
                   >
-                    <Send className="w-4 h-4" /> Send Request
+                    {submitting ? 'Sending...' : <><Send className="w-4 h-4" /> Send Request</>}
                   </button>
                 </div>
               </div>

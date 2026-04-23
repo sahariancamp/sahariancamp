@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Bed, Bath, Wind, Wifi, Sun, Moon } from 'lucide-react'
 
+import { fetchTents } from '@/lib/api'
+
 const amenities = [
   { icon: Bed, label: 'King Bed', detail: 'Egyptian cotton linens' },
   { icon: Bath, label: 'Private Bathroom', detail: 'Hot shower & organic amenities' },
@@ -11,68 +13,25 @@ const amenities = [
   { icon: Wifi, label: 'High-Speed WiFi', detail: 'Stay connected in the desert' },
 ]
 
-const tentTypes = [
-  {
-    id: 'quadruple',
-    name: 'Quadruple Deluxe Tent',
-    tagline: 'Ideal for friends and families',
-    description: 'Every Tent is widely separated from the others with a big space in the middle to provide the best privacy. Every tent has selected bed linen and a wide ensuite private bathroom with everything you need for the highest comfortable stay including electricity and WiFi.',
-    features: ['Selected bed linen', 'Ensuite private bathroom', 'Air Conditioner', 'Free WiFi', 'Tea/Coffee making facilities', 'Dunes views'],
-    size: '32m²',
-    occupancy: '4 persons',
-    price: 'Check Availability',
-    image: '/images/hero-desert.png',
-  },
-  {
-    id: 'family',
-    name: 'Family Deluxe Tent',
-    tagline: 'Perfect for family getaways',
-    description: 'Designed for families seeking adventure without compromise. Enjoy the desert life from the highest comfort with a spacious setup that accommodates the whole family while ensuring privacy and relaxation.',
-    features: ['Large family bed setup', 'Ensuite private bathroom', 'Air Conditioner', 'Free WiFi', 'Tea/Coffee making facilities', 'Dunes views'],
-    size: '35m²',
-    occupancy: 'Up to 5 persons',
-    price: 'Check Availability',
-    image: '/images/camp-tent.png',
-  },
-  {
-    id: 'triple',
-    name: 'Triple Deluxe Tent',
-    tagline: 'Comfort for small groups',
-    description: 'A spacious and luxurious tent perfect for a group of three. Wake up to stunning dune views, refreshed by desert air and golden light. Features premium bedding and an authentic Moroccan atmosphere.',
-    features: ['3 Comfortable beds', 'Ensuite private bathroom', 'Air Conditioner', 'Free WiFi', 'Moroccan décor', 'Dunes views'],
-    size: '28m²',
-    occupancy: '3 persons',
-    price: 'Check Availability',
-    image: '/images/tent-interior.png',
-  },
-  {
-    id: 'double',
-    name: 'Double Deluxe Tent',
-    tagline: 'A romantic desert retreat',
-    description: 'An intimate retreat for couples. The Double Deluxe offers a perfect balance of comfort and authenticity, with hand-crafted furnishings, uninterrupted views, and a romantic atmosphere.',
-    features: ['Queen/King bed', 'Ensuite private bathroom', 'Air Conditioner', 'Free WiFi', 'Romantic setup', 'Dunes views'],
-    size: '24m²',
-    occupancy: '2 persons',
-    price: 'Check Availability',
-    image: '/images/camp-tent.png',
-  },
-  {
-    id: 'single',
-    name: 'Single Deluxe Tent',
-    tagline: 'Your private sanctuary',
-    description: 'Perfect for the solo traveler seeking peace and reflection in the Sahara. Enjoy all the luxury amenities in a cozy, private setting overlooking the majestic dunes.',
-    features: ['Comfortable single bed', 'Ensuite private bathroom', 'Air Conditioner', 'Free WiFi', 'Tea/Coffee making facilities', 'Dunes views'],
-    size: '18m²',
-    occupancy: '1 person',
-    price: 'Check Availability',
-    image: '/images/tent-interior.png',
-  },
-]
-
-export default function Accommodations() {
+export default function Accommodations({ initialData = [] }: { initialData?: any[] }) {
+  const [tentTypes, setTentTypes] = useState<any[]>(initialData)
   const [activeTent, setActiveTent] = useState(0)
   const [isNight, setIsNight] = useState(false)
+  const [loading, setLoading] = useState(initialData.length === 0)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (initialData.length === 0) {
+      fetchTents().then(data => {
+        setTentTypes(data)
+        setLoading(false)
+      }).catch(err => {
+        console.error(err)
+        setLoading(false)
+      })
+    }
+  }, [initialData])
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start end', 'end start'],
@@ -81,6 +40,14 @@ export default function Accommodations() {
   const imageY = useTransform(scrollYProgress, [0, 1], ['5%', '-5%'])
 
   const currentTent = tentTypes[activeTent]
+
+  if (loading || tentTypes.length === 0) {
+    return (
+      <section id="accommodations" className="py-16 text-center text-[#E8D5B7]">
+        <div className="animate-pulse">Loading Sanctuaries...</div>
+      </section>
+    )
+  }
 
   return (
     <section id="accommodations" ref={containerRef} className="py-16 md:py-24 px-6 relative overflow-hidden">
@@ -163,7 +130,7 @@ export default function Accommodations() {
             <div className="relative aspect-video rounded-2xl overflow-hidden">
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-1000"
-                style={{ backgroundImage: `url('${currentTent.image}')` }}
+                style={{ backgroundImage: `url('${currentTent.image_url}')` }}
               />
               <div className={`absolute inset-0 transition-all duration-1000 ${
                 isNight ? 'bg-[#0A0A1A]/60' : 'bg-gradient-to-t from-[#0F0F1E]/60 to-transparent'
@@ -194,7 +161,7 @@ export default function Accommodations() {
               {/* Price badge */}
               <div className="absolute bottom-4 right-4 px-4 py-2 rounded-full bg-[#0F0F1E]/80 backdrop-blur-sm border border-[#C4A35A]/20">
                 <span className="text-[#C4A35A] text-sm font-light" style={{ fontFamily: "'Amiri', serif" }}>
-                  {currentTent.price}
+                  {currentTent.price_per_night ? `$${currentTent.price_per_night} / night` : 'Check Availability'}
                 </span>
               </div>
 
