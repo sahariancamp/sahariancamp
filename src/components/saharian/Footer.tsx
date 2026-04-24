@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { MessageCircle, Instagram, Facebook, Mail, ArrowUp } from 'lucide-react'
+import { Mail, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
-
+import { campInfo } from '@/lib/info'
+import { FaWhatsapp, FaInstagram, FaFacebook } from "react-icons/fa6";
 const starConstellation = [
   // North Star + nearby
   { x: 50, y: 8, size: 2.5, isNorth: true },
@@ -48,20 +49,20 @@ const starConstellation = [
 ]
 
 const socialLinks = [
-  { icon: Instagram, label: 'Instagram', href: '#' },
-  { icon: Facebook, label: 'Facebook', href: '#' },
-  { icon: MessageCircle, label: 'WhatsApp', href: '#' },
-  { icon: Mail, label: 'Email', href: '#' },
+  { icon: FaInstagram, label: 'Instagram', href: campInfo.instagram },
+  { icon: FaFacebook, label: 'Facebook', href: campInfo.facebook },
+  { icon: FaWhatsapp, label: 'WhatsApp', href: `https://wa.me/${campInfo.whatsapp}` },
+  { icon: Mail, label: 'Email', href: `mailto:${campInfo.email}` },
 ]
 
 const footerLinks = [
   {
     title: 'Camp',
     links: [
-      { label: 'About Us', href: '/' },
+      { label: 'About Us', href: '/about' },
       { label: 'The Tents', href: '/tents' },
       { label: 'Gallery', href: '/gallery' },
-      { label: 'Sustainability', href: '/' },
+      { label: 'Sustainability', href: '/about' },
     ],
   },
   {
@@ -77,9 +78,9 @@ const footerLinks = [
     title: 'Practical',
     links: [
       { label: 'Contact Us', href: '/contact' },
-      { label: 'FAQ', href: '/contact' },
-      { label: 'Weather', href: '/contact' },
-      { label: 'Location', href: '/contact' },
+      { label: 'FAQ', href: '/faq' },
+      { label: 'Weather', href: '/weather' },
+      { label: 'Location', href: '/location' },
     ],
   },
 ]
@@ -111,10 +112,13 @@ export default function Footer() {
 
     const stars: ShootingStar[] = []
     
+    const width = canvas.width
+    const height = canvas.height
+
     function createStar(): ShootingStar {
       return {
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height * 0.5,
+        x: Math.random() * width,
+        y: Math.random() * height * 0.5,
         length: 50 + Math.random() * 100,
         speed: 3 + Math.random() * 5,
         opacity: 0,
@@ -360,6 +364,7 @@ export default function Footer() {
               <motion.a
                 key={social.label}
                 href={social.href}
+                target='_blank'
                 className="group relative"
                 data-cursor-hover
                 whileHover={{ scale: 1.1 }}
@@ -384,9 +389,7 @@ export default function Footer() {
         <div className="golden-line mb-6" />
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full border border-[#C4A35A]/30 flex items-center justify-center">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#C4A35A]" />
-            </div>
+             
             <span
               className="text-[#C4A35A] text-sm tracking-[0.2em]"
               style={{ fontFamily: "'Playfair Display', serif" }}
