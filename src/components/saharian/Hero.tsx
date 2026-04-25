@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import Image from 'next/image'
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -35,14 +36,22 @@ export default function Hero() {
       {/* Background image with parallax */}
       <motion.div className="absolute inset-0" style={{ y, scale }}>
         {/* Fallback gradient and Poster Image (LCP optimized) */}
-        <div className="absolute inset-0 bg-[#0A0A1A]" />
+        <div className="absolute inset-0 bg-background" />
         <div
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${isVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
+          className={`absolute inset-0 transition-opacity duration-1000 ${isVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
           style={{
-            backgroundImage: "url('/images/hero-desert.png')",
             transform: `translate(${mousePos.x}px, ${mousePos.y}px) scale(1.1)`,
           }}
-        />
+        >
+          <Image
+            src="/images/hero-desert.png"
+            alt="Saharian Luxury Camp"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+        </div>
 
         {/* Background Video - Loaded lazily */}
         <video
@@ -60,11 +69,11 @@ export default function Hero() {
           <source src="/video/hero-video.webm" type="video/webm" />
         </video>
 
-        {/* Dark gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A1A]/70 via-[#0A0A1A]/30 to-[#0F0F1E]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A1A]/40 via-transparent to-[#0A0A1A]/40" />
+        {/* Dynamic gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background transition-colors duration-1000" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/40 via-transparent to-background/40 transition-colors duration-1000" />
         {/* Warm golden glow at center bottom */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[40%] bg-[#C4A35A]/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[40%] bg-primary/5 rounded-full blur-3xl" />
       </motion.div>
 
       {/* Film grain overlay */}
@@ -77,19 +86,19 @@ export default function Hero() {
       >
         {/* Decorative top element */}
         <motion.div
-          className="flex items-center gap-4 mb-8"
+          className="flex items-center gap-2 md:gap-4 mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.8 }}
         >
-          <div className="w-12 h-[1px] bg-[#C4A35A]/40" />
+          <div className="w-8 md:w-12 h-[1px] bg-primary/40" />
           <span
-            className="text-[#C4A35A]/60 text-xs tracking-[0.5em] uppercase"
+            className="text-primary/60 text-[10px] md:text-xs tracking-[0.3em] md:tracking-[0.5em] uppercase"
             style={{ fontFamily: "'Amiri', serif" }}
           >
             Merzouga • Morocco
           </span>
-          <div className="w-12 h-[1px] bg-[#C4A35A]/40" />
+          <div className="w-8 md:w-12 h-[1px] bg-primary/40" />
         </motion.div>
 
         {/* Main headline */}
@@ -102,7 +111,7 @@ export default function Hero() {
                 fontFamily: "'Playfair Display', serif",
                 fontSize: 'clamp(3rem, 8vw, 8rem)',
                 fontWeight: 300,
-                color: i === 2 || i === 3 ? '#C4A35A' : '#E8D5B7',
+                color: i === 2 || i === 3 ? 'var(--primary)' : 'var(--foreground)',
                 lineHeight: 1.1,
               }}
               initial={{ opacity: 0, y: 40 }}
@@ -120,7 +129,7 @@ export default function Hero() {
 
         {/* Subtitle */}
         <motion.p
-          className="mt-8 text-[#D4C4A8]/70 max-w-lg text-base md:text-lg tracking-wide"
+          className="mt-8 text-muted-foreground/70 max-w-lg text-base md:text-lg tracking-wide"
           style={{ fontFamily: "'Amiri', serif" }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -131,7 +140,7 @@ export default function Hero() {
 
         {/* Golden line separator */}
         <motion.div
-          className="mt-8 w-24 h-[1px] bg-gradient-to-r from-transparent via-[#C4A35A] to-transparent"
+          className="mt-8 w-24 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 1.2, duration: 1 }}
@@ -139,7 +148,7 @@ export default function Hero() {
 
         {/* CTA Button */}
         <motion.button
-          className="magnetic-btn mt-10 px-10 py-4 border border-[#C4A35A]/50 text-[#C4A35A] text-sm tracking-[0.3em] uppercase rounded-full hover:bg-[#C4A35A]/10 transition-all relative overflow-hidden group"
+          className="magnetic-btn mt-10 px-10 py-4 border border-primary/50 text-primary text-sm tracking-[0.3em] uppercase rounded-full hover:bg-primary/10 transition-all relative overflow-hidden group"
           style={{ fontFamily: "'Amiri', serif" }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -150,7 +159,7 @@ export default function Hero() {
           data-cursor-hover
         >
           <span className="relative z-10">Begin Your Journey</span>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#C4A35A]/0 via-[#C4A35A]/20 to-[#C4A35A]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
         </motion.button>
 
         {/* Scroll indicator */}
@@ -161,18 +170,18 @@ export default function Hero() {
           transition={{ delay: 4.8, duration: 1 }}
         >
           <span
-            className="text-[#8A8A9E] text-[10px] tracking-[0.4em] uppercase"
+            className="text-muted-foreground/60 text-[10px] tracking-[0.4em] uppercase"
             style={{ fontFamily: "'Amiri', serif" }}
           >
             Scroll to discover
           </span>
           <motion.div
-            className="w-5 h-8 rounded-full border border-[#C4A35A]/30 flex items-start justify-center p-1"
+            className="w-5 h-8 rounded-full border border-primary/30 flex items-start justify-center p-1"
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
             <motion.div
-              className="w-1 h-2 rounded-full bg-[#C4A35A]"
+              className="w-1 h-2 rounded-full bg-primary"
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
             />
@@ -187,14 +196,14 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 4.5, duration: 1 }}
       >
-        <div className="w-[1px] h-20 bg-gradient-to-b from-transparent to-[#C4A35A]/30" />
+        <div className="w-[1px] h-20 bg-gradient-to-b from-transparent to-primary/30" />
         <span
-          className="text-[#8A8A9E] text-[10px] tracking-[0.3em] uppercase"
+          className="text-muted-foreground/60 text-[10px] tracking-[0.3em] uppercase"
           style={{ writingMode: 'vertical-rl', fontFamily: "'Amiri', serif" }}
         >
           31°N 4°W
         </span>
-        <div className="w-[1px] h-20 bg-gradient-to-b from-[#C4A35A]/30 to-transparent" />
+        <div className="w-[1px] h-20 bg-gradient-to-b from-primary/30 to-transparent" />
       </motion.div>
     </section>
   )

@@ -71,7 +71,7 @@ export default function JourneyPlanner() {
         {/* Section header */}
         <div className="text-center mb-10">
           <motion.span
-            className="text-[#C4A35A] text-xs tracking-[0.5em] uppercase block mb-6"
+            className="text-primary text-xs tracking-[0.5em] uppercase block mb-6"
             style={{ fontFamily: "'Amiri', serif" }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -80,17 +80,17 @@ export default function JourneyPlanner() {
             Your Path
           </motion.span>
           <motion.h2
-            className="text-4xl md:text-6xl lg:text-7xl font-light text-[#E8D5B7] mb-6 text-glow"
+            className="text-4xl md:text-6xl lg:text-7xl font-light text-foreground mb-6 text-glow"
             style={{ fontFamily: "'Playfair Display', serif" }}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            Plan Your <span className="text-[#C4A35A]">Journey</span>
+            Plan Your <span className="text-primary">Journey</span>
           </motion.h2>
           <motion.p
-            className="text-[#D4C4A8]/60 text-lg max-w-xl mx-auto"
+            className="text-muted-foreground/60 text-lg max-w-xl mx-auto"
             style={{ fontFamily: "'Amiri', serif" }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -110,10 +110,10 @@ export default function JourneyPlanner() {
                 <button
                   className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all border ${
                     i === currentStep
-                      ? 'bg-[#C4A35A]/15 border-[#C4A35A]/40 text-[#C4A35A]'
+                      ? 'bg-primary/15 border-primary/40 text-primary'
                       : i < currentStep
-                        ? 'bg-[#2D5A4A]/10 border-[#2D5A4A]/30 text-[#2D5A4A]'
-                        : 'border-[#C4A35A]/10 text-[#8A8A9E]'
+                        ? 'bg-primary/10 border-primary/30 text-primary/70'
+                        : 'border-primary/10 text-muted-foreground'
                   }`}
                   onClick={() => setCurrentStep(i)}
                   data-cursor-hover
@@ -124,7 +124,7 @@ export default function JourneyPlanner() {
                   </span>
                 </button>
                 {i < steps.length - 1 && (
-                  <div className={`w-8 h-[1px] mx-1 ${i < currentStep ? 'bg-[#2D5A4A]/50' : 'bg-[#C4A35A]/10'}`} />
+                  <div className={`w-8 h-[1px] mx-1 ${i < currentStep ? 'bg-primary/50' : 'bg-primary/10'}`} />
                 )}
               </div>
             )
@@ -143,10 +143,10 @@ export default function JourneyPlanner() {
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
               >
-                <h3 className="text-2xl md:text-3xl font-light text-[#E8D5B7] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h3 className="text-2xl md:text-3xl font-light text-foreground mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
                   When do you wish to travel?
                 </h3>
-                <p className="text-[#D4C4A8]/60 text-sm mb-8" style={{ fontFamily: "'Amiri', serif" }}>
+                <p className="text-muted-foreground/60 text-sm mb-8" style={{ fontFamily: "'Amiri', serif" }}>
                   Choose your month — each season offers a different face of the Sahara
                 </p>
 
@@ -157,8 +157,8 @@ export default function JourneyPlanner() {
                       key={month}
                       className={`relative py-4 rounded-2xl transition-all border ${
                         selectedMonth === i
-                          ? 'bg-[#C4A35A]/15 border-[#C4A35A]/40 text-[#C4A35A]'
-                          : 'bg-[#1A1A2E]/50 border-[#C4A35A]/10 text-[#D4C4A8]/60 hover:border-[#C4A35A]/20 hover:text-[#D4C4A8]'
+                          ? 'bg-primary/15 border-primary/40 text-primary'
+                          : 'bg-card/50 border-primary/10 text-muted-foreground/60 hover:border-primary/20 hover:text-muted-foreground'
                       }`}
                       onClick={() => setSelectedMonth(i)}
                       data-cursor-hover
@@ -167,7 +167,7 @@ export default function JourneyPlanner() {
                       {/* Moon phase indicator */}
                       {selectedMonth === i && (
                         <motion.div
-                          className="absolute top-1 right-1 w-3 h-3 rounded-full bg-[#C4A35A]"
+                          className="absolute top-1 right-1 w-3 h-3 rounded-full bg-primary"
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ type: 'spring' }}
@@ -178,20 +178,20 @@ export default function JourneyPlanner() {
                 </div>
 
                 {/* Nights selector */}
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-[#1A1A2E]/50 border border-[#C4A35A]/10">
-                  <span className="text-[#D4C4A8] text-sm" style={{ fontFamily: "'Amiri', serif" }}>Number of nights</span>
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-card/50 border border-primary/10">
+                  <span className="text-muted-foreground text-sm" style={{ fontFamily: "'Amiri', serif" }}>Number of nights</span>
                   <div className="flex items-center gap-4">
                     <button
-                      className="w-8 h-8 rounded-full border border-[#C4A35A]/30 flex items-center justify-center text-[#C4A35A] hover:bg-[#C4A35A]/10"
+                      className="w-8 h-8 rounded-full border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/10"
                       onClick={() => setNights(Math.max(1, nights - 1))}
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="text-[#E8D5B7] text-xl font-light w-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <span className="text-foreground text-xl font-light w-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
                       {nights}
                     </span>
                     <button
-                      className="w-8 h-8 rounded-full border border-[#C4A35A]/30 flex items-center justify-center text-[#C4A35A] hover:bg-[#C4A35A]/10"
+                      className="w-8 h-8 rounded-full border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/10"
                       onClick={() => setNights(Math.min(7, nights + 1))}
                     >
                       <Plus className="w-3 h-3" />
@@ -210,41 +210,41 @@ export default function JourneyPlanner() {
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
               >
-                <h3 className="text-2xl md:text-3xl font-light text-[#E8D5B7] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h3 className="text-2xl md:text-3xl font-light text-foreground mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Who is traveling?
                 </h3>
-                <p className="text-[#D4C4A8]/60 text-sm mb-8" style={{ fontFamily: "'Amiri', serif" }}>
+                <p className="text-muted-foreground/60 text-sm mb-8" style={{ fontFamily: "'Amiri', serif" }}>
                   Every guest is a story — tell us about yours
                 </p>
 
                 <div className="space-y-6">
                   {/* Adults */}
-                  <div className="flex items-center justify-between p-6 rounded-2xl bg-[#1A1A2E]/50 border border-[#C4A35A]/10">
+                  <div className="flex items-center justify-between p-6 rounded-2xl bg-card/50 border border-primary/10">
                     <div className="flex items-center gap-4">
                       <div className="flex -space-x-2">
                         {Array.from({ length: Math.min(adults, 4) }).map((_, i) => (
-                          <div key={i} className="w-8 h-8 rounded-full bg-[#C4A35A]/20 border-2 border-[#1A1A2E] flex items-center justify-center">
-                            <Users className="w-3 h-3 text-[#C4A35A]" />
+                          <div key={i} className="w-8 h-8 rounded-full bg-primary/20 border-2 border-card flex items-center justify-center">
+                            <Users className="w-3 h-3 text-primary" />
                           </div>
                         ))}
                       </div>
                       <div>
-                        <p className="text-[#E8D5B7] text-sm font-medium">Adults</p>
-                        <p className="text-[#8A8A9E] text-xs">Age 13+</p>
+                        <p className="text-foreground text-sm font-medium">Adults</p>
+                        <p className="text-muted-foreground text-xs">Age 13+</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
                       <button
-                        className="w-10 h-10 rounded-full border border-[#C4A35A]/30 flex items-center justify-center text-[#C4A35A] hover:bg-[#C4A35A]/10"
+                        className="w-10 h-10 rounded-full border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/10"
                         onClick={() => setAdults(Math.max(1, adults - 1))}
                       >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span className="text-[#E8D5B7] text-2xl font-light w-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+                      <span className="text-foreground text-2xl font-light w-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
                         {adults}
                       </span>
                       <button
-                        className="w-10 h-10 rounded-full border border-[#C4A35A]/30 flex items-center justify-center text-[#C4A35A] hover:bg-[#C4A35A]/10"
+                        className="w-10 h-10 rounded-full border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/10"
                         onClick={() => setAdults(Math.min(6, adults + 1))}
                       >
                         <Plus className="w-4 h-4" />
@@ -253,28 +253,28 @@ export default function JourneyPlanner() {
                   </div>
 
                   {/* Children */}
-                  <div className="flex items-center justify-between p-6 rounded-2xl bg-[#1A1A2E]/50 border border-[#C4A35A]/10">
+                  <div className="flex items-center justify-between p-6 rounded-2xl bg-card/50 border border-primary/10">
                     <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 rounded-full bg-[#2D5A4A]/20 border-2 border-[#1A1A2E] flex items-center justify-center">
-                        <Users className="w-3 h-3 text-[#2D5A4A]" />
+                      <div className="w-8 h-8 rounded-full bg-primary/20 border-2 border-card flex items-center justify-center">
+                        <Users className="w-3 h-3 text-primary" />
                       </div>
                       <div>
-                        <p className="text-[#E8D5B7] text-sm font-medium">Children</p>
-                        <p className="text-[#8A8A9E] text-xs">Age 2-12</p>
+                        <p className="text-foreground text-sm font-medium">Children</p>
+                        <p className="text-muted-foreground text-xs">Age 2-12</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
                       <button
-                        className="w-10 h-10 rounded-full border border-[#C4A35A]/30 flex items-center justify-center text-[#C4A35A] hover:bg-[#C4A35A]/10"
+                        className="w-10 h-10 rounded-full border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/10"
                         onClick={() => setChildren(Math.max(0, children - 1))}
                       >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span className="text-[#E8D5B7] text-2xl font-light w-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+                      <span className="text-foreground text-2xl font-light w-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
                         {children}
                       </span>
                       <button
-                        className="w-10 h-10 rounded-full border border-[#C4A35A]/30 flex items-center justify-center text-[#C4A35A] hover:bg-[#C4A35A]/10"
+                        className="w-10 h-10 rounded-full border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/10"
                         onClick={() => setChildren(Math.min(4, children + 1))}
                       >
                         <Plus className="w-4 h-4" />
@@ -294,10 +294,10 @@ export default function JourneyPlanner() {
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
               >
-                <h3 className="text-2xl md:text-3xl font-light text-[#E8D5B7] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h3 className="text-2xl md:text-3xl font-light text-foreground mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
                   What experiences call to you?
                 </h3>
-                <p className="text-[#D4C4A8]/60 text-sm mb-8" style={{ fontFamily: "'Amiri', serif" }}>
+                <p className="text-muted-foreground/60 text-sm mb-8" style={{ fontFamily: "'Amiri', serif" }}>
                   Toggle to add — each one weaves into your desert story
                 </p>
 
@@ -309,24 +309,24 @@ export default function JourneyPlanner() {
                         key={exp.id}
                         className={`p-4 rounded-2xl transition-all border text-left flex items-center justify-between ${
                           isSelected
-                            ? 'bg-[#C4A35A]/10 border-[#C4A35A]/40'
-                            : 'bg-[#1A1A2E]/50 border-[#C4A35A]/10 hover:border-[#C4A35A]/20'
+                            ? 'bg-primary/10 border-primary/40'
+                            : 'bg-card/50 border-primary/10 hover:border-primary/20'
                         }`}
                         onClick={() => toggleExperience(exp.id)}
                         data-cursor-hover
                       >
                         <div>
-                          <p className={`text-sm font-medium ${isSelected ? 'text-[#C4A35A]' : 'text-[#E8D5B7]'}`}>
+                          <p className={`text-sm font-medium ${isSelected ? 'text-primary' : 'text-foreground'}`}>
                             {exp.name}
                           </p>
-                          <p className="text-[#8A8A9E] text-xs mt-1">
+                          <p className="text-muted-foreground text-xs mt-1">
                             {exp.price === 0 ? 'Complimentary' : 'Included in Quote'}
                           </p>
                         </div>
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                          isSelected ? 'border-[#C4A35A] bg-[#C4A35A]' : 'border-[#C4A35A]/20'
+                          isSelected ? 'border-primary bg-primary' : 'border-primary/20'
                         }`}>
-                          {isSelected && <Check className="w-3 h-3 text-[#0F0F1E]" />}
+                          {isSelected && <Check className="w-3 h-3 text-background" />}
                         </div>
                       </button>
                     )
@@ -344,10 +344,10 @@ export default function JourneyPlanner() {
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
               >
-                <h3 className="text-2xl md:text-3xl font-light text-[#E8D5B7] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h3 className="text-2xl md:text-3xl font-light text-foreground mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Where does your journey begin?
                 </h3>
-                <p className="text-[#D4C4A8]/60 text-sm mb-8" style={{ fontFamily: "'Amiri', serif" }}>
+                <p className="text-muted-foreground/60 text-sm mb-8" style={{ fontFamily: "'Amiri', serif" }}>
                   We arrange private transport from major Moroccan cities
                 </p>
 
@@ -359,26 +359,26 @@ export default function JourneyPlanner() {
                         key={point.id}
                         className={`p-5 rounded-2xl transition-all border text-left ${
                           isSelected
-                            ? 'bg-[#C4A35A]/10 border-[#C4A35A]/40'
-                            : 'bg-[#1A1A2E]/50 border-[#C4A35A]/10 hover:border-[#C4A35A]/20'
+                            ? 'bg-primary/10 border-primary/40'
+                            : 'bg-card/50 border-primary/10 hover:border-primary/20'
                         }`}
                         onClick={() => setDeparture(point.id)}
                         data-cursor-hover
                       >
                         <div className="flex items-center gap-3 mb-2">
-                          <MapPin className={`w-4 h-4 ${isSelected ? 'text-[#C4A35A]' : 'text-[#8A8A9E]'}`} />
-                          <p className={`text-base font-medium ${isSelected ? 'text-[#C4A35A]' : 'text-[#E8D5B7]'}`}>
+                          <MapPin className={`w-4 h-4 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                          <p className={`text-base font-medium ${isSelected ? 'text-primary' : 'text-foreground'}`}>
                             {point.name}
                           </p>
                         </div>
-                        <div className="flex items-center gap-4 text-xs text-[#8A8A9E] ml-7">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground ml-7">
                           <span>{point.distance}</span>
                           <span>•</span>
                           <span>{point.duration}</span>
                           {point.price > 0 && (
                             <>
                               <span>•</span>
-                              <span className="text-[#C4A35A]">Upon Request</span>
+                              <span className="text-primary">Upon Request</span>
                             </>
                           )}
                         </div>
@@ -390,35 +390,35 @@ export default function JourneyPlanner() {
                 {/* Summary */}
                 {departure && (
                   <motion.div
-                    className="p-6 rounded-2xl bg-[#1A1A2E]/80 border border-[#C4A35A]/20"
+                    className="p-6 rounded-2xl bg-card/80 border border-primary/20"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
-                    <h4 className="text-[#C4A35A] text-xs tracking-[0.3em] uppercase mb-4" style={{ fontFamily: "'Amiri', serif" }}>
+                    <h4 className="text-primary text-xs tracking-[0.3em] uppercase mb-4" style={{ fontFamily: "'Amiri', serif" }}>
                       Your Journey Summary
                     </h4>
                     <div className="space-y-3 mb-6">
                       <div className="flex justify-between text-sm">
-                        <span className="text-[#D4C4A8]/60">Accommodation ({nights} nights)</span>
-                        <span className="text-[#E8D5B7]">Included</span>
+                        <span className="text-muted-foreground/60">Accommodation ({nights} nights)</span>
+                        <span className="text-foreground">Included</span>
                       </div>
                       {experienceTotal > 0 && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-[#D4C4A8]/60">Experiences ({selectedExperiences.length} selected)</span>
-                          <span className="text-[#E8D5B7]">Included</span>
+                          <span className="text-muted-foreground/60">Experiences ({selectedExperiences.length} selected)</span>
+                          <span className="text-foreground">Included</span>
                         </div>
                       )}
                       {transportTotal > 0 && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-[#D4C4A8]/60">Transport from {departurePoints.find(d => d.id === departure)?.name}</span>
-                          <span className="text-[#E8D5B7]">Included</span>
+                          <span className="text-muted-foreground/60">Transport from {departurePoints.find(d => d.id === departure)?.name}</span>
+                          <span className="text-foreground">Included</span>
                         </div>
                       )}
                       <div className="golden-line my-4" />
                       <div className="flex justify-between">
-                        <span className="text-[#E8D5B7] font-medium">Total Price</span>
+                        <span className="text-foreground font-medium">Total Price</span>
                         <motion.span
-                          className="text-2xl text-[#C4A35A] font-light"
+                          className="text-2xl text-primary font-light"
                           style={{ fontFamily: "'Playfair Display', serif" }}
                         >
                           Upon Request
@@ -427,7 +427,7 @@ export default function JourneyPlanner() {
                     </div>
 
                     <button
-                      className="magnetic-btn w-full py-4 rounded-full bg-[#C4A35A] text-[#0F0F1E] text-sm tracking-[0.2em] uppercase font-medium hover:bg-[#E8D5A0] transition-all"
+                      className="magnetic-btn w-full py-4 rounded-full bg-primary text-background text-sm tracking-[0.2em] uppercase font-medium hover:opacity-90 transition-all"
                       style={{ fontFamily: "'Amiri', serif" }}
                       data-cursor-hover
                     >
@@ -440,10 +440,10 @@ export default function JourneyPlanner() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-[#C4A35A]/10">
+          <div className="flex items-center justify-between mt-8 pt-6 border-t border-primary/10">
             <button
               className={`flex items-center gap-2 text-sm tracking-wider uppercase transition-all ${
-                currentStep > 0 ? 'text-[#C4A35A] hover:text-[#E8D5A0]' : 'text-transparent pointer-events-none'
+                currentStep > 0 ? 'text-primary hover:opacity-70' : 'text-transparent pointer-events-none'
               }`}
               style={{ fontFamily: "'Amiri', serif" }}
               onClick={prevStep}
@@ -458,7 +458,7 @@ export default function JourneyPlanner() {
                 <div
                   key={i}
                   className={`w-2 h-2 rounded-full transition-all ${
-                    i === currentStep ? 'bg-[#C4A35A] w-6' : i < currentStep ? 'bg-[#2D5A4A]' : 'bg-[#C4A35A]/20'
+                    i === currentStep ? 'bg-primary w-6' : i < currentStep ? 'bg-primary/60' : 'bg-primary/20'
                   }`}
                 />
               ))}
@@ -466,7 +466,7 @@ export default function JourneyPlanner() {
 
             {currentStep < steps.length - 1 && (
               <button
-                className="flex items-center gap-2 text-sm tracking-wider uppercase text-[#C4A35A] hover:text-[#E8D5A0] transition-all"
+                className="flex items-center gap-2 text-sm tracking-wider uppercase text-primary hover:opacity-70 transition-all"
                 style={{ fontFamily: "'Amiri', serif" }}
                 onClick={nextStep}
                 data-cursor-hover

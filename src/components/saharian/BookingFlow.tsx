@@ -1,340 +1,458 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Users, Sparkles, Tent, ArrowRight, ChevronLeft, Check, Send } from 'lucide-react'
+import { CalendarIcon, Users, Briefcase, Tent, ArrowRight, ChevronLeft, Check, Send } from 'lucide-react'
 import Image from 'next/image'
+import { format } from 'date-fns'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { fetchTents, createBooking } from '@/lib/api'
+import Link from 'next/link'
 
-import { useEffect } from 'react'
-import { fetchTents, fetchActivities, createBooking } from '@/lib/api'
+type BookingType = 'individual' | 'agency'
 
-export default function BookingFlow() {
-  const [tentTypes, setTentTypes] = useState<any[]>([])
-  const [activityOptions, setActivityOptions] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+export default function BookingFlow({ initialTents = [] }: { initialTents?: any[] }) {
+  const [step, setStep] = useState(1)
+  const [tents, setTents] = useState<any[]>(initialTents)
+  const [loading, setLoading] = useState(initialTents.length === 0)
   const [submitting, setSubmitting] = useState(false)
-  const [step, setStep] = useState(1) // 1: Type, 2: Dates/Who, 3: Selection, 4: Finalize
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [bookingNumber, setBookingNumber] = useState('')
+
+  // Form State
+  const [bookingType, setBookingType] = useState<BookingType>('individual')
+  const [dates, setDates] = useState<{ checkIn: Date | undefined, checkOut: Date | undefined }>({ checkIn: undefined, checkOut: undefined })
+  const [selectedTents, setSelectedTents] = useState<{ [id: number]: number }>({}) // { tent_id: quantity }
+  const [details, setDetails] = useState({ name: '', email: '', phone: '' })
 
   useEffect(() => {
-    Promise.all([fetchTents(), fetchActivities()]).then(([tents, acts]) => {
-      setTentTypes(tents)
-      setActivityOptions(acts)
-      setLoading(false)
-    }).catch(err => {
-      console.error(err)
-      setLoading(false)
+    if (initialTents.length === 0) {
+      fetchTents().then(data => {
+        setTents(data)
+        setLoading(false)
+      }).catch(err => {
+        console.error(err)
+        setLoading(false)
+      })
+    }
+  }, [initialTents])
+
+  // Derived Values
+  const totalTentsSelected = Object.values(selectedTents).reduce((a, b) => a + b, 0)
+  const isAgencyValid = bookingType === 'agency' ? totalTentsSelected >= 3 : totalTentsSelected >= 1
+  
+  const calculateNights = () => {
+    let nights = 1
+    if (dates.checkIn && dates.checkOut) {
+      const diffTime = Math.abs(dates.checkOut.getTime() - dates.checkIn.getTime())
+      nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      if (nights === 0) nights = 1
+    }
+    return nights
+  }
+
+  const calculateTotal = () => {
+    let total = 0
+    const nights = calculateNights()
+
+    Object.entries(selectedTents).forEach(([idStr, quantity]) => {
+      const tent = tents.find(t => t.id === parseInt(idStr))
+      if (tent) {
+        const price = bookingType === 'agency' && tent.agency_price ? Number(tent.agency_price) : Number(tent.price_per_night)
+        total += (price * quantity) * nights
+      }
     })
-  }, [])
+    return total
+  }
 
-  const [bookingType, setBookingType] = useState<'stay' | 'activity' | null>(null)
-  const [selectedItems, setSelectedItems] = useState<string[]>([])
-  const [formData, setFormData] = useState({
-    date: '',
-    nights: 1,
-    adults: 2,
-    children: 0,
-    name: '',
-    email: '',
-    phone: '',
-  })
+  const handleTentSelect = (id: number, delta: number) => {
+    setSelectedTents(prev => {
+      const current = prev[id] || 0
+      const newQty = Math.max(0, current + delta)
+      const updated = { ...prev }
+      if (newQty === 0) delete updated[id]
+      else updated[id] = newQty
+      return updated
+    })
+  }
 
-  const handleBookingSubmit = async () => {
+  const handleSubmit = async () => {
     setSubmitting(true)
     try {
+      const itemsArray = Object.entries(selectedTents).map(([idStr, qty]) => {
+        return { id: parseInt(idStr), quantity: qty }
+      })
+
       const payload = {
-        customer_name: formData.name,
-        customer_email: formData.email,
-        customer_phone: formData.phone,
-        check_in: formData.date,
+        booking_type: bookingType,
+        customer_name: details.name,
+        customer_email: details.email,
+        customer_phone: details.phone,
+        check_in: dates.checkIn ? format(dates.checkIn, 'yyyy-MM-dd') : '',
+        check_out: dates.checkOut ? format(dates.checkOut, 'yyyy-MM-dd') : '',
         total_price: calculateTotal(),
-        notes: `Nights: ${formData.nights}, Adults: ${formData.adults}, Children: ${formData.children}, Type: ${bookingType}`,
+        items: itemsArray,
       }
-      await createBooking(payload)
-      alert('Request sent successfully! Our team will contact you soon.')
-      setStep(1)
-      setSelectedItems([])
+      const res = await createBooking(payload)
+      setBookingNumber(payload.booking_type === 'agency' ? 'Agency Request' : (res as any).booking?.booking_number || 'Confirmed')
+      setIsSuccess(true)
+      // Reset state for potential next booking
+      setSelectedTents({})
+      setDetails({ name: '', email: '', phone: '' })
+      setDates({ checkIn: undefined, checkOut: undefined })
     } catch (error) {
-      console.error(error)
-      alert('Failed to send request. Please try again.')
+      console.error('Submission error:', error)
+      alert('Failed to send booking request. Please try again.')
     } finally {
       setSubmitting(false)
     }
   }
 
-  if (loading) return <div className="text-center py-10 text-[#C4A35A]">Preparing Booking Engine...</div>
+  if (loading) return <div className="text-center py-20 text-[#C4A35A] animate-pulse">Loading Booking System...</div>
 
-
-  const nextStep = () => setStep(prev => prev + 1)
-  const prevStep = () => setStep(prev => prev - 1)
-
-  const toggleItem = (id: string) => {
-    if (bookingType === 'stay') {
-      setSelectedItems([id]) // For stay, usually one tent type at a time or simple selection
-    } else {
-      setSelectedItems(prev => 
-        prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-      )
-    }
+  const changeStep = (newStep: number) => {
+    setStep(newStep)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const calculateTotal = () => {
-    if (bookingType === 'stay') {
-      const tent = tentTypes.find(t => t.id === selectedItems[0] || t.slug === selectedItems[0])
-      return (tent?.price_per_night || 0) * formData.nights
-    } else {
-      return selectedItems.reduce((acc, id) => {
-        const act = activityOptions.find(a => a.id === id || a.slug === id)
-        return acc + (act?.price_per_person || 0) * (formData.adults + formData.children)
-      }, 0)
-    }
+  if (isSuccess) {
+    return (
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-2xl mx-auto text-center py-20 px-6 bg-card/50 backdrop-blur-xl border border-primary/20 rounded-3xl"
+      >
+        <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-8">
+          <Check className="w-10 h-10 text-primary" />
+        </div>
+        <h2 className="text-4xl font-serif text-foreground mb-4">Thank You!</h2>
+        <p className="text-muted-foreground text-lg mb-8">
+          Your booking request has been received. Our team will review the details and contact you shortly.
+        </p>
+        <div className="inline-block px-6 py-3 bg-primary/10 border border-primary/30 rounded-xl mb-12">
+          <span className="text-sm text-primary/70 uppercase tracking-widest block mb-1">Booking Reference</span>
+          <span className="text-xl font-mono text-foreground tracking-wider">{bookingNumber}</span>
+        </div>
+          <Link 
+            href="/" 
+            className="text-primary hover:text-foreground transition-colors flex items-center justify-center gap-2 mx-auto text-center"
+          >
+            <ArrowRight className="w-4 h-4 rotate-180" />
+            Back to Home
+          </Link>
+      </motion.div>
+    )
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-4 flex flex-col">
-      {/* Progress Bar - More compact */}
-      <div className="flex-none flex items-center justify-center gap-4 mb-8">
-        {[1, 2, 3, 4].map(s => (
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Progress Bar */}
+      <div className="flex items-center justify-center gap-4 mb-12">
+        {[1, 2, 3, 4, 5].map(s => (
           <div key={s} className="flex items-center">
-            <div className={`w-8 h-8 rounded-full text-xs flex items-center justify-center border transition-all ${
-              step >= s ? 'bg-[#C4A35A] border-[#C4A35A] text-[#0F0F1E]' : 'border-[#C4A35A]/20 text-[#8A8A9E]'
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+              step >= s ? 'bg-primary text-background shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]' : 'border border-primary/30 text-muted-foreground'
             }`}>
-              {step > s ? <Check className="w-4 h-4" /> : s}
+              {step > s ? <Check className="w-5 h-5" /> : s}
             </div>
-            {s < 4 && <div className={`w-8 h-[1px] mx-1 ${step > s ? 'bg-[#C4A35A]' : 'bg-[#C4A35A]/10'}`} />}
+            {s !== 5 && (
+              <div className={`w-8 md:w-16 h-1 mx-2 rounded-full ${step > s ? 'bg-primary' : 'bg-primary/10'}`} />
+            )}
           </div>
         ))}
       </div>
 
-      <div className="flex-1">
-        <AnimatePresence mode="wait">
-          {/* Step 1: Compact Selection */}
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            >
+      <AnimatePresence mode="wait">
+        {/* STEP 1: Booking Type */}
+        {step === 1 && (
+          <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-light text-foreground mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Who is booking?</h2>
+              <p className="text-muted-foreground/70">Please select your traveler profile to get accurate pricing.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <button
-                onClick={() => { setBookingType('stay'); nextStep() }}
-                className="group relative h-[280px] rounded-2xl overflow-hidden border border-[#C4A35A]/10 hover:border-[#C4A35A]/40 transition-all"
+                onClick={() => setBookingType('individual')}
+                className={`p-8 rounded-2xl border-2 transition-all flex flex-col items-center text-center gap-4 ${
+                  bookingType === 'individual' ? 'border-primary bg-card shadow-[0_0_20px_rgba(var(--primary-rgb),0.15)]' : 'border-card hover:border-primary/50 bg-background'
+                }`}
               >
-                <Image src="/images/gallery/camp-aerial-layout.jpg" alt="Stay" fill className="object-cover opacity-40 group-hover:opacity-60 transition-opacity" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-t from-[#0A0A1A] via-transparent to-transparent">
-                  <Tent className="w-10 h-10 text-[#C4A35A] mb-3" />
-                  <h3 className="text-2xl font-light text-[#E8D5B7] mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>Luxury Stay</h3>
-                  <p className="text-[#D4C4A8]/60 text-xs">A night under the stars in premium tents.</p>
+                <Users className={`w-12 h-12 ${bookingType === 'individual' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <div>
+                  <h3 className="text-xl text-foreground font-medium mb-2">Individual Guest</h3>
+                  <p className="text-sm text-muted-foreground/70">For couples, families, or solo luxury travelers.</p>
                 </div>
               </button>
-
               <button
-                onClick={() => { setBookingType('activity'); nextStep() }}
-                className="group relative h-[280px] rounded-2xl overflow-hidden border border-[#C4A35A]/10 hover:border-[#C4A35A]/40 transition-all"
+                onClick={() => setBookingType('agency')}
+                className={`p-8 rounded-2xl border-2 transition-all flex flex-col items-center text-center gap-4 ${
+                  bookingType === 'agency' ? 'border-primary bg-card shadow-[0_0_20px_rgba(var(--primary-rgb),0.15)]' : 'border-card hover:border-primary/50 bg-background'
+                }`}
               >
-                <Image src="/images/gallery/sunset-lounge-area.jpg" alt="Activity" fill className="object-cover opacity-40 group-hover:opacity-60 transition-opacity" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-t from-[#0A0A1A] via-transparent to-transparent">
-                  <Sparkles className="w-10 h-10 text-[#C4A35A] mb-3" />
-                  <h3 className="text-2xl font-light text-[#E8D5B7] mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>Desert Experiences</h3>
-                  <p className="text-[#D4C4A8]/60 text-xs">Buggies, camels, and Berber music.</p>
+                <Briefcase className={`w-12 h-12 ${bookingType === 'agency' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <div>
+                  <h3 className="text-xl text-foreground font-medium mb-2">Travel Agency (B2B)</h3>
+                  <p className="text-sm text-muted-foreground/70">Special rates for tour operators (Minimum 3 tents required).</p>
                 </div>
               </button>
-            </motion.div>
-          )}
+            </div>
+            <div className="flex justify-end mt-8">
+              <button onClick={() => changeStep(2)} className="flex items-center gap-2 px-8 py-3 bg-primary text-background font-medium rounded-full hover:opacity-90 transition-colors shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)]">
+                Next Step <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
 
-          {/* Step 2: Compact Dates & People */}
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              className="glass-card p-6 md:p-8 rounded-2xl border border-[#C4A35A]/10"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-6">
-                  <h3 className="text-xl font-light text-[#E8D5B7]" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    {bookingType === 'stay' ? 'Arrival Details' : 'Pick a Date'}
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[#C4A35A] text-[10px] uppercase tracking-widest">Date</label>
-                      <input 
-                        type="date" 
-                        className="desert-input p-3 rounded-xl w-full text-sm"
-                        value={formData.date}
-                        onChange={(e) => setFormData({...formData, date: e.target.value})}
-                      />
-                    </div>
-                    {bookingType === 'stay' && (
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-[#C4A35A] text-[10px] uppercase tracking-widest">Nights</label>
-                        <div className="flex items-center gap-4 p-2.5 rounded-xl bg-[#1A1A2E]/50 border border-[#C4A35A]/10">
-                          <button onClick={() => setFormData({...formData, nights: Math.max(1, formData.nights - 1)})} className="w-8 h-8 rounded-lg hover:bg-[#C4A35A]/10 text-[#C4A35A]">-</button>
-                          <span className="flex-1 text-center text-sm">{formData.nights}</span>
-                          <button onClick={() => setFormData({...formData, nights: formData.nights + 1})} className="w-8 h-8 rounded-lg hover:bg-[#C4A35A]/10 text-[#C4A35A]">+</button>
-                        </div>
+        {/* STEP 2: Dates */}
+        {step === 2 && (
+          <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8 min-h-[500px]">
+            <div className="text-center">
+              <h2 className="text-3xl font-light text-foreground mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>When will you arrive?</h2>
+              <p className="text-muted-foreground/70">Select your check-in and check-out dates.</p>
+            </div>
+            <div className="bg-card p-8 rounded-3xl border border-primary/20 max-w-lg mx-auto space-y-8">
+              <div className="space-y-2 relative">
+                <label className="block text-foreground text-sm font-medium">Check-in Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="w-full flex items-center justify-between bg-background border border-primary/30 rounded-xl px-4 py-4 text-foreground hover:border-primary/60 transition-colors">
+                      {dates.checkIn ? format(dates.checkIn, "PPP") : <span className="text-muted-foreground/50">Pick a date</span>}
+                      <CalendarIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background border-primary/30 text-foreground" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dates.checkIn}
+                      onSelect={(date) => setDates({ ...dates, checkIn: date })}
+                      initialFocus
+                      className="rounded-xl shadow-[0_0_30px_rgba(var(--primary-rgb),0.1)]"
+                      classNames={{
+                        day_selected: "bg-primary text-background hover:bg-primary hover:text-background focus:bg-primary focus:text-background",
+                        day_today: "bg-card text-primary",
+                        button: "hover:bg-card hover:text-foreground",
+                        head_cell: "text-muted-foreground",
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2 relative">
+                <label className="block text-foreground text-sm font-medium">Check-out Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="w-full flex items-center justify-between bg-background border border-primary/30 rounded-xl px-4 py-4 text-foreground hover:border-primary/60 transition-colors">
+                      {dates.checkOut ? format(dates.checkOut, "PPP") : <span className="text-muted-foreground/50">Pick a date</span>}
+                      <CalendarIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background border-primary/30 text-foreground" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dates.checkOut}
+                      onSelect={(date) => setDates({ ...dates, checkOut: date })}
+                      initialFocus
+                      disabled={(date) => dates.checkIn ? date < dates.checkIn : false}
+                      className="rounded-xl shadow-[0_0_30px_rgba(var(--primary-rgb),0.1)]"
+                      classNames={{
+                        day_selected: "bg-primary text-background hover:bg-primary hover:text-background focus:bg-primary focus:text-background",
+                        day_today: "bg-card text-primary",
+                        button: "hover:bg-card hover:text-foreground",
+                        head_cell: "text-muted-foreground",
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+            <div className="flex justify-between mt-8">
+              <button onClick={() => changeStep(1)} className="flex items-center gap-2 px-8 py-3 text-muted-foreground hover:text-primary transition-colors">
+                <ChevronLeft className="w-5 h-5" /> Back
+              </button>
+              <button 
+                onClick={() => changeStep(3)} 
+                disabled={!dates.checkIn || !dates.checkOut}
+                className="flex items-center gap-2 px-8 py-3 bg-primary text-background font-medium rounded-full hover:opacity-90 transition-colors disabled:opacity-50 shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)] disabled:shadow-none"
+              >
+                Next Step <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* STEP 3: Tents Selection */}
+        {step === 3 && (
+          <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-light text-[#E8D5B7] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Select Your Tents</h2>
+              <p className="text-[#D4C4A8]/70">
+                {bookingType === 'agency' ? 'Agency Mode: Minimum 3 tents required.' : 'Select the tents for your stay.'}
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {tents.map(tent => {
+                const qty = selectedTents[tent.id] || 0
+                const price = bookingType === 'agency' && tent.agency_price ? tent.agency_price : tent.price_per_night
+                
+                return (
+                   <div key={tent.id} className={`bg-card rounded-2xl overflow-hidden border transition-all flex h-32 ${qty > 0 ? 'border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.15)]' : 'border-primary/10 hover:border-primary/30'}`}>
+                    {tent.image_url && (
+                      <div className="w-1/3 relative h-full">
+                        <Image src={tent.image_url} alt={tent.name} fill className="object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card" />
                       </div>
                     )}
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <h3 className="text-xl font-light text-[#E8D5B7]" style={{ fontFamily: "'Playfair Display', serif" }}>Number of Guests</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#1A1A2E]/50 border border-[#C4A35A]/10">
-                      <span className="text-xs">Adults</span>
-                      <div className="flex items-center gap-3">
-                         <button onClick={() => setFormData({...formData, adults: Math.max(1, formData.adults - 1)})} className="w-8 h-8 rounded-lg hover:bg-[#C4A35A]/10 text-[#C4A35A]">-</button>
-                         <span className="text-sm w-4 text-center">{formData.adults}</span>
-                         <button onClick={() => setFormData({...formData, adults: formData.adults + 1})} className="w-8 h-8 rounded-lg hover:bg-[#C4A35A]/10 text-[#C4A35A]">+</button>
+                    <div className="p-4 relative flex-1 flex flex-col justify-between">
+                      <div className="flex justify-between items-start">
+                        <h3 className="text-lg text-foreground font-medium truncate pr-2">{tent.name}</h3>
+                        <p className="text-primary font-bold whitespace-nowrap">${price}</p>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#1A1A2E]/50 border border-[#C4A35A]/10">
-                      <span className="text-xs">Children</span>
-                      <div className="flex items-center gap-3">
-                         <button onClick={() => setFormData({...formData, children: Math.max(0, formData.children - 1)})} className="w-8 h-8 rounded-lg hover:bg-[#C4A35A]/10 text-[#C4A35A]">-</button>
-                         <span className="text-sm w-4 text-center">{formData.children}</span>
-                         <button onClick={() => setFormData({...formData, children: formData.children + 1})} className="w-8 h-8 rounded-lg hover:bg-[#C4A35A]/10 text-[#C4A35A]">+</button>
+                      
+                      <div className="flex items-center justify-between mt-auto bg-background rounded-lg border border-primary/20 overflow-hidden w-28">
+                        <button onClick={() => handleTentSelect(tent.id, -1)} className="w-8 h-8 flex items-center justify-center text-foreground hover:bg-card transition-colors">-</button>
+                        <span className="text-sm font-medium text-foreground w-6 text-center">{qty}</span>
+                        <button onClick={() => handleTentSelect(tent.id, 1)} className="w-8 h-8 flex items-center justify-center text-background bg-primary hover:opacity-90 transition-colors">+</button>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                )
+              })}
+            </div>
 
-              <div className="flex justify-between mt-8">
-                <button onClick={prevStep} className="flex items-center gap-2 text-[#8A8A9E] hover:text-[#C4A35A] transition-colors text-xs uppercase tracking-widest">
-                  <ChevronLeft className="w-4 h-4" /> Back
-                </button>
-                <button 
-                  onClick={nextStep} 
-                  disabled={!formData.date}
-                  className="bg-[#C4A35A] text-[#0F0F1E] px-8 py-3 rounded-full text-sm font-medium disabled:opacity-50"
-                >
-                  Continue
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Step 3: Compact Selection */}
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              className="pb-4"
-            >
-              <h3 className="text-2xl font-light text-[#E8D5B7] text-center mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
-                {bookingType === 'stay' ? 'Choose Your Sanctuary' : 'Select Activities'}
-              </h3>
+            <div className="flex justify-between mt-8 items-center bg-card p-4 rounded-full border border-primary/10">
+              <button onClick={() => changeStep(2)} className="flex items-center gap-2 px-6 py-2 text-muted-foreground hover:text-primary transition-colors">
+                <ChevronLeft className="w-5 h-5" /> Back
+              </button>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(bookingType === 'stay' ? tentTypes : activityOptions).map((item) => (
-                  <button
-                    key={item.id || item.slug}
-                    onClick={() => toggleItem(item.id || item.slug)}
-                    className={`group relative rounded-2xl overflow-hidden border transition-all ${
-                      selectedItems.includes(item.id || item.slug) ? 'border-[#C4A35A] ring-1 ring-[#C4A35A]' : 'border-[#C4A35A]/10 hover:border-[#C4A35A]/40'
-                    }`}
-                  >
-                    <div className="relative h-32">
-                      <Image src={item.image_url || '/images/hero-desert.png'} alt={item.name} fill className="object-cover" />
-                      {selectedItems.includes(item.id || item.slug) && (
-                        <div className="absolute inset-0 bg-[#C4A35A]/20 flex items-center justify-center">
-                          <Check className="w-8 h-8 text-[#C4A35A]" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-3 bg-[#1A1A2E]/90 backdrop-blur-sm text-left">
-                      <h4 className="text-[#E8D5B7] text-sm font-medium">{item.name}</h4>
-                      <p className="text-[#C4A35A] text-[10px] uppercase tracking-wider">Available Upon Request</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex justify-between mt-8">
-                <button onClick={prevStep} className="flex items-center gap-2 text-[#8A8A9E] hover:text-[#C4A35A] transition-colors text-xs uppercase tracking-widest">
-                  <ChevronLeft className="w-4 h-4" /> Back
-                </button>
+              <div className="flex items-center gap-6 pr-2">
+                <span className="text-muted-foreground hidden sm:inline">Selected: <strong className="text-primary">{totalTentsSelected}</strong> tents</span>
                 <button 
-                  onClick={nextStep} 
-                  disabled={selectedItems.length === 0}
-                  className="bg-[#C4A35A] text-[#0F0F1E] px-8 py-3 rounded-full text-sm font-medium disabled:opacity-50"
+                  onClick={() => changeStep(4)} 
+                  disabled={!isAgencyValid}
+                  className="flex items-center gap-2 px-6 py-2 bg-primary text-background font-medium rounded-full hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)] disabled:shadow-none"
                 >
-                  Finalize Booking
+                  Next Step <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
-            </motion.div>
-          )}
+            </div>
+          </motion.div>
+        )}
 
-          {/* Step 4: Compact Finalize */}
-          {step === 4 && (
-            <motion.div
-              key="step4"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="max-w-xl mx-auto"
-            >
-              <div className="glass-card p-6 rounded-2xl border border-[#C4A35A]/10 space-y-6">
-                <h3 className="text-2xl font-light text-[#E8D5B7] text-center" style={{ fontFamily: "'Playfair Display', serif" }}>Confirm Reservation</h3>
-                
+        {/* STEP 4: Details */}
+        {step === 4 && (
+          <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-light text-[#E8D5B7] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Your Details</h2>
+              <p className="text-[#D4C4A8]/70">Where should we send the confirmation?</p>
+            </div>
+            <div className="bg-card p-8 rounded-3xl border border-primary/20 max-w-xl mx-auto space-y-6">
+              <div>
+                <label className="block text-foreground mb-2 text-sm">{bookingType === 'agency' ? 'Agency Name' : 'Full Name'}</label>
+                <input 
+                  type="text" 
+                  value={details.name}
+                  onChange={e => setDetails({...details, name: e.target.value})}
+                  className="w-full bg-background border border-primary/30 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary"
+                  placeholder={bookingType === 'agency' ? 'e.g. Sahara Tours LLC' : 'e.g. John Doe'}
+                />
+              </div>
+              <div>
+                <label className="block text-foreground mb-2 text-sm">Email Address</label>
+                <input 
+                  type="email" 
+                  value={details.email}
+                  onChange={e => setDetails({...details, email: e.target.value})}
+                  className="w-full bg-background border border-primary/30 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary"
+                  placeholder="contact@example.com"
+                />
+              </div>
+              <div>
+                <label className="block text-foreground mb-2 text-sm">WhatsApp / Phone Number</label>
+                <input 
+                  type="tel" 
+                  value={details.phone}
+                  onChange={e => setDetails({...details, phone: e.target.value})}
+                  className="w-full bg-background border border-primary/30 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary"
+                  placeholder="+212 600 000 000"
+                />
+              </div>
+            </div>
+            <div className="flex justify-between mt-8">
+              <button onClick={() => changeStep(3)} className="flex items-center gap-2 px-8 py-3 text-muted-foreground hover:text-primary transition-colors">
+                <ChevronLeft className="w-5 h-5" /> Back
+              </button>
+              <button 
+                onClick={() => changeStep(5)} 
+                disabled={!details.name || !details.email || !details.phone}
+                className="flex items-center gap-2 px-8 py-3 bg-primary text-background font-medium rounded-full hover:opacity-90 transition-colors disabled:opacity-50 shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)] disabled:shadow-none"
+              >
+                Review Booking <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* STEP 5: Summary */}
+        {step === 5 && (
+          <motion.div key="step5" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-light text-foreground mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Booking Summary</h2>
+              <p className="text-muted-foreground/70">Please review your request before submitting.</p>
+            </div>
+            
+            <div className="bg-card rounded-3xl border border-primary/30 overflow-hidden max-w-2xl mx-auto shadow-2xl">
+              <div className="p-8 border-b border-primary/10">
+                <div className="grid grid-cols-2 gap-6 mb-8">
+                  <div>
+                    <p className="text-muted-foreground/50 text-sm mb-1">{bookingType === 'agency' ? 'Agency' : 'Guest'}</p>
+                    <p className="text-foreground font-medium">{details.name}</p>
+                    <p className="text-muted-foreground text-sm">{details.email}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-muted-foreground/50 text-sm mb-1">Dates ({calculateNights()} {calculateNights() === 1 ? 'Night' : 'Nights'})</p>
+                    <p className="text-foreground font-medium">{dates.checkIn ? format(dates.checkIn, "MMM do") : ''} to {dates.checkOut ? format(dates.checkOut, "MMM do") : ''}</p>
+                  </div>
+                </div>
+
+                <h4 className="text-primary font-medium mb-4 uppercase tracking-wider text-sm border-b border-primary/20 pb-2">Selected Tents</h4>
                 <div className="space-y-3">
-                  <input 
-                    placeholder="Full Name" 
-                    className="desert-input w-full p-3.5 rounded-xl text-sm"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input 
-                      placeholder="Email" 
-                      type="email"
-                      className="desert-input w-full p-3.5 rounded-xl text-sm"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    />
-                    <input 
-                      placeholder="Phone" 
-                      className="desert-input w-full p-3.5 rounded-xl text-sm"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-[#0F0F1E]/50 p-4 rounded-xl border border-[#C4A35A]/10 space-y-3">
-                  <div className="flex justify-between text-[10px] text-[#C4A35A] uppercase tracking-[0.2em]">
-                    <span>Summary</span>
-                    <span className="capitalize">{bookingType}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[#D4C4A8]/60">Date</span>
-                    <span>{formData.date}</span>
-                  </div>
-                  <div className="flex justify-between text-lg border-t border-[#C4A35A]/10 pt-3 mt-3">
-                    <span className="text-[#E8D5B7] font-light">Price Quote</span>
-                    <span className="text-[#C4A35A]">Upon Request</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <button onClick={prevStep} className="px-6 py-3 rounded-full border border-[#C4A35A]/20 text-[#8A8A9E] text-sm">Back</button>
-                  <button 
-                    className="flex-1 bg-[#C4A35A] text-[#0F0F1E] py-3 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-[#E8D5A0] transition-all text-sm disabled:opacity-50"
-                    onClick={handleBookingSubmit}
-                    disabled={submitting || !formData.name || !formData.email}
-                  >
-                    {submitting ? 'Sending...' : <><Send className="w-4 h-4" /> Send Request</>}
-                  </button>
+                  {Object.entries(selectedTents).map(([idStr, qty]) => {
+                    const tent = tents.find(t => t.id === parseInt(idStr))
+                    if (!tent) return null
+                    const price = bookingType === 'agency' && tent.agency_price ? Number(tent.agency_price) : Number(tent.price_per_night)
+                    return (
+                      <div key={idStr} className="flex justify-between items-center text-foreground">
+                        <span>{qty}x {tent.name}</span>
+                        <span>${price * qty} <span className="text-xs text-muted-foreground/50">/night</span></span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+              <div className="p-8 bg-background flex justify-between items-center">
+                <span className="text-muted-foreground uppercase tracking-wider text-sm">Estimated Total</span>
+                <span className="text-4xl text-primary font-light">${calculateTotal()}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between mt-8 max-w-2xl mx-auto">
+              <button onClick={() => changeStep(4)} className="flex items-center gap-2 px-8 py-3 text-muted-foreground hover:text-primary transition-colors">
+                <ChevronLeft className="w-5 h-5" /> Back
+              </button>
+              <button 
+                onClick={handleSubmit} 
+                disabled={submitting}
+                className="flex items-center gap-2 px-8 py-3 bg-primary text-background font-medium rounded-full hover:opacity-90 transition-colors disabled:opacity-50 shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.5)]"
+              >
+                {submitting ? 'Submitting...' : 'Confirm Request'} <Send className="w-5 h-5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

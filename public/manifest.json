@@ -1,0 +1,16 @@
+{
+  "name": "Saharian Camp Luxury Desert Experience",
+  "short_name": "Saharian Camp",
+  "description": "An immersive luxury camp at the edge of Erg Chebbi dunes in Merzouga, Morocco.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F0F1E",
+  "theme_color": "#C4A35A",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

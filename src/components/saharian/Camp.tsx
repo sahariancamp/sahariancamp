@@ -68,7 +68,7 @@ export default function Camp() {
       <div className="min-h-screen flex items-center justify-center px-6">
         <div className="max-w-3xl text-center">
           <motion.span
-            className="text-[#C4A35A] text-xs tracking-[0.5em] uppercase block mb-6"
+            className="text-primary text-xs tracking-[0.5em] uppercase block mb-6"
             style={{ fontFamily: "'Amiri', serif" }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -78,7 +78,7 @@ export default function Camp() {
             The Camp
           </motion.span>
           <motion.h2
-            className="text-4xl md:text-6xl lg:text-7xl font-light text-[#E8D5B7] mb-6 text-glow"
+            className="text-4xl md:text-6xl lg:text-7xl font-light text-foreground mb-6 text-glow"
             style={{ fontFamily: "'Playfair Display', serif" }}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -86,10 +86,10 @@ export default function Camp() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             Walk Through<br />
-            <span className="text-[#C4A35A]">Oasis</span>
+            <span className="text-primary">Oasis</span>
           </motion.h2>
           <motion.p
-            className="text-[#D4C4A8]/60 text-lg max-w-xl mx-auto"
+            className="text-muted-foreground/60 text-lg max-w-xl mx-auto"
             style={{ fontFamily: "'Amiri', serif" }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -99,7 +99,7 @@ export default function Camp() {
             Scroll to walk through our camp. Each step reveals a new chapter of the Saharian experience.
           </motion.p>
           <motion.div
-            className="mt-8 flex items-center justify-center gap-2 text-[#8A8A9E]"
+            className="mt-8 flex items-center justify-center gap-2 text-muted-foreground"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -141,8 +141,8 @@ export default function Camp() {
                       loading={i === 0 ? undefined : "lazy"}
                     />
                   </div>
-                  <div className="absolute inset-0 bg-[#0F0F1E]/70" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#0F0F1E]/80 via-[#0F0F1E]/40 to-transparent" />
+                  <div className="absolute inset-0 bg-background/70" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/40 to-transparent" />
 
                   {/* Content */}
                   <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full">
@@ -154,11 +154,11 @@ export default function Camp() {
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.1 }}
                       >
-                        <div className="w-10 h-10 rounded-full border border-[#C4A35A]/40 flex items-center justify-center">
-                          <Icon className="w-4 h-4 text-[#C4A35A]" />
+                        <div className="w-10 h-10 rounded-full border border-primary/40 flex items-center justify-center">
+                          <Icon className="w-4 h-4 text-primary" />
                         </div>
                         <span
-                          className="text-[#C4A35A]/60 text-xs tracking-[0.3em] uppercase"
+                          className="text-primary/60 text-xs tracking-[0.3em] uppercase"
                           style={{ fontFamily: "'Amiri', serif" }}
                         >
                           {String(i + 1).padStart(2, '0')} / {String(campStops.length).padStart(2, '0')}
@@ -166,7 +166,7 @@ export default function Camp() {
                       </motion.div>
 
                       <motion.h3
-                        className="text-3xl md:text-5xl lg:text-6xl font-light text-[#E8D5B7] mb-2"
+                        className="text-3xl md:text-5xl lg:text-6xl font-light text-foreground mb-2"
                         style={{ fontFamily: "'Playfair Display', serif" }}
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -177,7 +177,7 @@ export default function Camp() {
                       </motion.h3>
 
                       <motion.p
-                        className="text-[#C4A35A] text-sm tracking-[0.2em] uppercase mb-6"
+                        className="text-primary text-sm tracking-[0.2em] uppercase mb-6"
                         style={{ fontFamily: "'Amiri', serif" }}
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -188,7 +188,7 @@ export default function Camp() {
                       </motion.p>
 
                       <motion.p
-                        className="text-[#D4C4A8]/70 text-base leading-relaxed mb-8"
+                        className="text-muted-foreground/70 text-base leading-relaxed mb-8"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -198,14 +198,14 @@ export default function Camp() {
                       </motion.p>
 
                       <motion.div
-                        className="pl-4 border-l-2 border-[#C4A35A]/30"
+                        className="pl-4 border-l-2 border-primary/30"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.1 + 0.5 }}
                       >
                         <p
-                          className="text-[#C4A35A]/60 text-sm italic"
+                          className="text-primary/60 text-sm italic"
                           style={{ fontFamily: "'Playfair Display', serif" }}
                         >
                           {stop.accent}
@@ -223,11 +223,11 @@ export default function Camp() {
             {campStops.map((_, i) => (
               <motion.div
                 key={i}
-                className="w-2 h-2 rounded-full bg-[#C4A35A]/30"
+                className="w-2 h-2 rounded-full bg-primary/30"
                 style={{
                   backgroundColor: scrollYProgress.get() > (i - 0.5) / campStops.length && scrollYProgress.get() < (i + 0.5) / campStops.length
-                    ? '#C4A35A'
-                    : 'rgba(196, 163, 90, 0.3)',
+                    ? 'var(--primary)'
+                    : 'rgba(var(--primary-rgb), 0.3)',
                 }}
               />
             ))}

@@ -31,20 +31,20 @@ export default function Gallery({ initialData = [] }: { initialData?: any[] }) {
   if (loading) return <div className="text-center py-24 text-[#C4A35A]">Invoking Visual Poetry...</div>
 
   return (
-    <section className="py-12 bg-[#0F0F1E]">
+    <section className="py-12 bg-background">
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-12">
           <motion.h2 
-            className="text-4xl md:text-6xl font-light text-[#E8D5B7] mb-4"
+            className="text-4xl md:text-6xl font-light text-foreground mb-4"
             style={{ fontFamily: "'Playfair Display', serif" }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            Visual <span className="text-[#C4A35A]">Poetry</span>
+            Visual <span className="text-primary">Poetry</span>
           </motion.h2>
           <motion.p 
-            className="text-[#D4C4A8]/70 max-w-2xl mx-auto text-base"
+            className="text-muted-foreground/70 max-w-2xl mx-auto text-base"
             style={{ fontFamily: "'Amiri', serif" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -62,8 +62,8 @@ export default function Gallery({ initialData = [] }: { initialData?: any[] }) {
               onClick={() => setActiveCategory(cat)}
               className={`px-8 py-2 rounded-full text-xs tracking-[0.2em] uppercase transition-all border ${
                 activeCategory === cat
-                  ? 'bg-[#C4A35A] border-[#C4A35A] text-[#0F0F1E]'
-                  : 'border-[#C4A35A]/10 text-[#8A8A9E] hover:border-[#C4A35A]/40 hover:text-[#D4C4A8]'
+                  ? 'bg-primary border-primary text-background'
+                  : 'border-primary/10 text-muted-foreground hover:border-primary/40 hover:text-foreground'
               }`}
               style={{ fontFamily: "'Amiri', serif" }}
               data-cursor-hover
@@ -87,10 +87,10 @@ export default function Gallery({ initialData = [] }: { initialData?: any[] }) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.4 }}
-                className="relative group cursor-pointer break-inside-avoid rounded-2xl overflow-hidden border border-[#C4A35A]/10"
+                className="relative group cursor-pointer break-inside-avoid rounded-2xl overflow-hidden border border-primary/10"
                 onClick={() => setSelectedImage(image)}
               >
-                <div className="aspect-[4/5] bg-[#1A1A2E] overflow-hidden">
+                <div className="aspect-[4/5] bg-card overflow-hidden">
                   <Image
                     src={image.image_url}
                     alt={image.title}
@@ -103,14 +103,14 @@ export default function Gallery({ initialData = [] }: { initialData?: any[] }) {
                 </div>
                 
                 {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-[#0F0F1E]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 text-center">
-                  <div className="w-10 h-10 rounded-full bg-[#C4A35A] flex items-center justify-center mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <Maximize2 className="w-4 h-4 text-[#0F0F1E]" />
+                <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 text-center">
+                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    <Maximize2 className="w-4 h-4 text-background" />
                   </div>
-                  <h4 className="text-[#E8D5B7] text-lg font-light mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  <h4 className="text-foreground text-lg font-light mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {image.title}
                   </h4>
-                  <p className="text-[#C4A35A] text-xs tracking-widest uppercase">
+                  <p className="text-primary text-xs tracking-widest uppercase">
                     {image.category}
                   </p>
                 </div>
@@ -127,18 +127,18 @@ export default function Gallery({ initialData = [] }: { initialData?: any[] }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-[#0A0A1A]/95 flex items-center justify-center p-6 md:p-12"
+            className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-xl flex items-center justify-center p-6 md:p-12"
             onClick={() => setSelectedImage(null)}
           >
             <button 
-              className="absolute top-8 right-8 w-12 h-12 rounded-full bg-[#1A1A2E] border border-[#C4A35A]/20 flex items-center justify-center text-[#C4A35A] hover:bg-[#C4A35A]/10 transition-all"
+              className="absolute top-8 right-8 w-12 h-12 rounded-full bg-card border border-primary/20 flex items-center justify-center text-primary hover:bg-primary/10 transition-all"
               onClick={() => setSelectedImage(null)}
             >
               <X className="w-6 h-6" />
             </button>
             
             <motion.div 
-              className="relative max-w-5xl w-full max-h-full aspect-video md:aspect-auto rounded-3xl overflow-hidden border border-[#C4A35A]/20"
+              className="relative max-w-5xl w-full max-h-full aspect-video md:aspect-auto rounded-3xl overflow-hidden border border-primary/20"
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
@@ -152,11 +152,11 @@ export default function Gallery({ initialData = [] }: { initialData?: any[] }) {
                 className="w-full h-full object-contain"
                 priority
               />
-              <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#0A0A1A] to-transparent">
-                <h3 className="text-2xl md:text-4xl text-[#E8D5B7] font-light" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-background to-transparent">
+                <h3 className="text-2xl md:text-4xl text-foreground font-light" style={{ fontFamily: "'Playfair Display', serif" }}>
                   {selectedImage.title}
                 </h3>
-                <p className="text-[#C4A35A] tracking-[0.3em] uppercase text-xs mt-2">
+                <p className="text-primary tracking-[0.3em] uppercase text-xs mt-2">
                   {selectedImage.category}
                 </p>
               </div>

@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Bed, Bath, Wind, Wifi, Sun, Moon } from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
 
 import { fetchTents } from '@/lib/api'
 
@@ -48,7 +50,7 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
 
   if (loading || tentTypes.length === 0) {
     return (
-      <section id="accommodations" className="py-16 text-center text-[#E8D5B7]">
+      <section id="accommodations" className="py-16 text-center text-foreground">
         <div className="animate-pulse">Loading Sanctuaries...</div>
       </section>
     )
@@ -63,7 +65,7 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
         {/* Section header */}
         <div className="text-center mb-10 md:mb-16">
           <motion.span
-            className="text-[#C4A35A] text-xs tracking-[0.5em] uppercase block mb-6"
+            className="text-primary text-xs tracking-[0.5em] uppercase block mb-6"
             style={{ fontFamily: "'Amiri', serif" }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -72,14 +74,14 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
             The Sanctuaries
           </motion.span>
           <motion.h2
-            className="text-4xl md:text-6xl lg:text-7xl font-light text-[#E8D5B7] mb-6 text-glow"
+            className="text-4xl md:text-6xl lg:text-7xl font-light text-foreground mb-6 text-glow"
             style={{ fontFamily: "'Playfair Display', serif" }}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            Your Desert <span className="text-[#C4A35A]">Sanctuary</span>
+            Your Desert <span className="text-primary">Sanctuary</span>
           </motion.h2>
 
           {/* Day/Night toggle */}
@@ -90,20 +92,20 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
           >
-            <Sun className={`w-4 h-4 transition-colors ${!isNight ? 'text-[#C4A35A]' : 'text-[#8A8A9E]'}`} />
+            <Sun className={`w-4 h-4 transition-colors ${!isNight ? 'text-primary' : 'text-muted-foreground'}`} />
             <button
-              className="w-14 h-7 rounded-full bg-[#1A1A2E] border border-[#C4A35A]/20 flex items-center p-1 transition-all"
+              className="w-14 h-7 rounded-full bg-card border border-primary/20 flex items-center p-1 transition-all"
               onClick={() => setIsNight(!isNight)}
               data-cursor-hover
             >
               <motion.div
-                className="w-5 h-5 rounded-full bg-[#C4A35A]"
+                className="w-5 h-5 rounded-full bg-primary"
                 animate={{ x: isNight ? 24 : 0 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               />
             </button>
-            <Moon className={`w-4 h-4 transition-colors ${isNight ? 'text-[#C4A35A]' : 'text-[#8A8A9E]'}`} />
-            <span className="text-[#8A8A9E] text-xs tracking-wider" style={{ fontFamily: "'Amiri', serif" }}>
+            <Moon className={`w-4 h-4 transition-colors ${isNight ? 'text-primary' : 'text-muted-foreground'}`} />
+            <span className="text-muted-foreground text-xs tracking-wider" style={{ fontFamily: "'Amiri', serif" }}>
               {isNight ? 'Night' : 'Day'}
             </span>
           </motion.div>
@@ -116,8 +118,8 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
               key={tent.id}
               className={`px-6 py-2 rounded-full text-xs tracking-[0.2em] uppercase transition-all border ${
                 activeTent === i
-                  ? 'bg-[#C4A35A]/15 border-[#C4A35A]/50 text-[#C4A35A]'
-                  : 'border-[#C4A35A]/10 text-[#8A8A9E] hover:border-[#C4A35A]/30 hover:text-[#D4C4A8]'
+                  ? 'bg-primary/15 border-primary/50 text-primary'
+                  : 'border-primary/10 text-muted-foreground hover:border-primary/30 hover:text-foreground'
               }`}
               style={{ fontFamily: "'Amiri', serif" }}
               onClick={() => setActiveTent(i)}
@@ -133,12 +135,17 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
           {/* Left: Image with parallax */}
           <motion.div className="relative" style={{ y: imageY }}>
             <div className="relative aspect-video rounded-2xl overflow-hidden">
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-1000"
-                style={{ backgroundImage: `url('${currentTent.image_url}')` }}
-              />
+              <div className="absolute inset-0 transition-transform duration-1000">
+                <Image
+                  src={currentTent.image_url}
+                  alt={currentTent.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
               <div className={`absolute inset-0 transition-all duration-1000 ${
-                isNight ? 'bg-[#0A0A1A]/60' : 'bg-gradient-to-t from-[#0F0F1E]/60 to-transparent'
+                isNight ? 'bg-background/60' : 'bg-gradient-to-t from-background/60 to-transparent'
               }`} />
 
               {/* Night stars overlay */}
@@ -164,15 +171,15 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
               )}
 
               {/* Price badge removed as per request */}
-              <div className="absolute bottom-4 right-4 px-4 py-2 rounded-full bg-[#0F0F1E]/80 backdrop-blur-sm border border-[#C4A35A]/20">
-                <span className="text-[#C4A35A] text-sm font-light" style={{ fontFamily: "'Amiri', serif" }}>
+              <div className="absolute bottom-4 right-4 px-4 py-2 rounded-full bg-background/80 backdrop-blur-sm border border-primary/20">
+                <span className="text-primary text-sm font-light" style={{ fontFamily: "'Amiri', serif" }}>
                   Check Availability
                 </span>
               </div>
 
               {/* Size badge */}
-              <div className="absolute top-4 left-4 px-4 py-2 rounded-full bg-[#0F0F1E]/80 backdrop-blur-sm border border-[#C4A35A]/20">
-                <span className="text-[#D4C4A8] text-xs" style={{ fontFamily: "'Amiri', serif" }}>
+              <div className="absolute top-4 left-4 px-4 py-2 rounded-full bg-background/80 backdrop-blur-sm border border-primary/20">
+                <span className="text-muted-foreground text-xs" style={{ fontFamily: "'Amiri', serif" }}>
                   {currentTent.size} • {currentTent.occupancy}
                 </span>
               </div>
@@ -182,7 +189,7 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
           {/* Right: Content */}
           <div>
             <motion.p
-              className="text-[#C4A35A] text-xs tracking-[0.3em] uppercase mb-2"
+              className="text-primary text-xs tracking-[0.3em] uppercase mb-2"
               style={{ fontFamily: "'Amiri', serif" }}
               key={`tag-${currentTent.id}`}
               initial={{ opacity: 0, x: -20 }}
@@ -192,7 +199,7 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
               {currentTent.tagline}
             </motion.p>
             <motion.h3
-              className="text-3xl md:text-4xl font-light text-[#E8D5B7] mb-4"
+              className="text-3xl md:text-4xl font-light text-foreground mb-4"
               style={{ fontFamily: "'Playfair Display', serif" }}
               key={`name-${currentTent.id}`}
               initial={{ opacity: 0, y: 20 }}
@@ -202,7 +209,7 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
               {currentTent.name}
             </motion.h3>
             <motion.p
-              className="text-[#D4C4A8]/70 text-base leading-relaxed mb-8"
+              className="text-muted-foreground/70 text-base leading-relaxed mb-8"
               key={`desc-${currentTent.id}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -216,13 +223,13 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
               {amenities.map((amenity) => {
                 const Icon = amenity.icon
                 return (
-                  <div key={amenity.label} className="flex items-center gap-3 p-3 rounded-xl bg-[#1A1A2E]/50 border border-[#C4A35A]/10">
-                    <div className="w-8 h-8 rounded-full bg-[#C4A35A]/10 flex items-center justify-center">
-                      <Icon className="w-4 h-4 text-[#C4A35A]" />
+                  <div key={amenity.label} className="flex items-center gap-3 p-3 rounded-xl bg-card/50 border border-primary/10">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Icon className="w-4 h-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-[#E8D5B7] text-xs font-medium">{amenity.label}</p>
-                      <p className="text-[#8A8A9E] text-[10px]">{amenity.detail}</p>
+                      <p className="text-foreground text-xs font-medium">{amenity.label}</p>
+                      <p className="text-muted-foreground text-[10px]">{amenity.detail}</p>
                     </div>
                   </div>
                 )
@@ -240,22 +247,23 @@ export default function Accommodations({ initialData = [] }: { initialData?: any
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {currentTent.features.map((feature: string, i: number) => (
                   <div key={i} className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#C4A35A]" />
-                    <span className="text-[#D4C4A8]/60 text-sm">{feature}</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    <span className="text-muted-foreground/60 text-sm">{feature}</span>
                   </div>
                 ))}
               </div>
             </motion.div>
 
             {/* CTA */}
-            <button
-              className="magnetic-btn w-full sm:w-auto px-10 py-4 rounded-full bg-[#C4A35A] text-[#0F0F1E] text-sm tracking-[0.2em] uppercase font-medium hover:bg-[#E8D5A0] transition-all"
-              style={{ fontFamily: "'Amiri', serif" }}
-              onClick={() => document.querySelector('#journey')?.scrollIntoView({ behavior: 'smooth' })}
-              data-cursor-hover
-            >
-              Reserve Your Sanctuary
-            </button>
+            <Link href="/booking">
+              <button
+                className="magnetic-btn w-full sm:w-auto px-10 py-4 rounded-full bg-primary text-background text-sm tracking-[0.2em] uppercase font-medium hover:opacity-90 transition-all"
+                style={{ fontFamily: "'Amiri', serif" }}
+                data-cursor-hover
+              >
+                Reserve Your Sanctuary
+              </button>
+            </Link>
           </div>
         </div>
       </div>

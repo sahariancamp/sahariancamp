@@ -59,12 +59,16 @@
 :root {
   --radius: 0.625rem;
   --background: #0F0F1E;
+  --background-rgb: 15, 15, 30;
   --foreground: #E8D5B7;
+  --foreground-rgb: 232, 213, 183;
   --card: #1A1A2E;
+  --card-rgb: 26, 26, 46;
   --card-foreground: #E8D5B7;
   --popover: #1A1A2E;
   --popover-foreground: #E8D5B7;
   --primary: #C4A35A;
+  --primary-rgb: 196, 163, 90;
   --primary-foreground: #0F0F1E;
   --secondary: #1A1A2E;
   --secondary-foreground: #D4C4A8;
@@ -91,12 +95,41 @@
   --sidebar-ring: #C4A35A;
 }
 
+.light {
+  --background: #FDF8F0; /* Bleached Sand */
+  --background-rgb: 253, 248, 240;
+  --foreground: #1A1410; /* Deeper Earth Brown */
+  --foreground-rgb: 26, 20, 16;
+  --card: #F5EEDB; /* Soft Sandstone */
+  --card-rgb: 245, 238, 219;
+  --card-foreground: #1A1410;
+  --popover: #FDF8F0;
+  --popover-foreground: #1A1410;
+  --primary: #B35A2B; /* Deep Scorching Sun */
+  --primary-rgb: 179, 90, 43;
+  --primary-foreground: #FDF8F0;
+  --secondary: #E8D5B7;
+  --secondary-foreground: #1A1410;
+  --muted: #E8D5B7;
+  --muted-foreground: #6B5D54; /* Darker muted text */
+  --accent: #8B4513; /* Earth Tone */
+  --accent-foreground: #FDF8F0;
+  --border: rgba(212, 118, 60, 0.3);
+  --input: rgba(212, 118, 60, 0.2);
+  --ring: #D4763C;
+  --sidebar: #F5EEDB;
+  --sidebar-foreground: #2C241E;
+  --sidebar-primary: #D4763C;
+  --sidebar-primary-foreground: #FDF8F0;
+  --sidebar-border: rgba(212, 118, 60, 0.2);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-500;
     font-family: var(--font-geist-sans), sans-serif;
     overflow-x: hidden;
   }
@@ -107,10 +140,10 @@
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0F0F1E;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #C4A35A;
+  background: var(--primary);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -297,10 +330,10 @@
 
 /* Glass card */
 .glass-card {
-  background: rgba(26, 26, 46, 0.6);
+  background: rgba(var(--card-rgb), 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(196, 163, 90, 0.15);
+  border: 1px solid rgba(var(--primary-rgb), 0.15);
 }
 
 /* Tilt card */
@@ -321,11 +354,11 @@
 .desert-gradient {
   background: linear-gradient(
     180deg,
-    #0F0F1E 0%,
-    #1A1A2E 20%,
-    #1F1F35 50%,
-    #1A1A2E 80%,
-    #0F0F1E 100%
+    var(--background) 0%,
+    var(--card) 20%,
+    var(--muted) 50%,
+    var(--card) 80%,
+    var(--background) 100%
   );
 }
 
@@ -346,11 +379,10 @@
 .night-sky-gradient {
   background: linear-gradient(
     180deg,
-    #0A0A1A 0%,
-    #0F0F2A 30%,
-    #1A1A3E 60%,
-    #1A1A2E 80%,
-    #0F0F1E 100%
+    var(--background) 0%,
+    var(--muted) 30%,
+    var(--card) 60%,
+    var(--background) 100%
   );
 }
 

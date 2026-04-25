@@ -13,15 +13,15 @@ interface AccordionItemProps {
 
 const AccordionItem = ({ question, answer, isOpen, onClick }: AccordionItemProps) => {
   return (
-    <div className="border-b border-[#C4A35A]/20">
+    <div className="border-b border-primary/20">
       <button
         className="w-full py-6 flex items-center justify-between text-left focus:outline-none group"
         onClick={onClick}
       >
-        <h3 className={`text-lg md:text-xl font-light transition-colors duration-300 ${isOpen ? 'text-[#C4A35A]' : 'text-[#E8D5B7] group-hover:text-[#C4A35A]'}`} style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h3 className={`text-lg md:text-xl font-light transition-colors duration-300 ${isOpen ? 'text-primary' : 'text-foreground group-hover:text-primary'}`} style={{ fontFamily: "'Playfair Display', serif" }}>
           {question}
         </h3>
-        <span className="ml-6 flex-shrink-0 text-[#C4A35A] transition-transform duration-300">
+        <span className="ml-6 flex-shrink-0 text-primary transition-transform duration-300">
           {isOpen ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
         </span>
       </button>
@@ -33,7 +33,7 @@ const AccordionItem = ({ question, answer, isOpen, onClick }: AccordionItemProps
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
           >
-            <div className="pb-6 pr-12 text-[#D4C4A8]/80 text-base leading-relaxed" style={{ fontFamily: "'Amiri', serif" }}>
+            <div className="pb-6 pr-12 text-muted-foreground/80 text-base leading-relaxed" style={{ fontFamily: "'Amiri', serif" }}>
               {answer}
             </div>
           </motion.div>

@@ -5,8 +5,10 @@ import { Toaster } from "@/components/ui/toaster";
 import LenisProvider from "@/components/saharian/LenisProvider";
 import CustomCursor from "@/components/saharian/CustomCursor";
 import ScrollProgress from "@/components/saharian/ScrollProgress";
+import { ThemeToggle } from "@/components/saharian/ThemeToggle";
 import Navbar from "@/components/saharian/Navbar";
 import Footer from "@/components/saharian/Footer";
+import { ThemeProvider } from "@/components/saharian/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +27,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Saharian Camp" }],
   icons: {
     icon: "/logo.svg",
+    apple: "/logo.svg",
   },
+  manifest: "/manifest.json",
   openGraph: {
     title: "Saharian Camp — Where the Dunes Whisper",
     description: "Luxury camp at the edge of the impossible. Merzouga, Morocco.",
@@ -48,17 +52,25 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0F0F1E] text-[#E8D5B7]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        <LenisProvider>
-          <CustomCursor />
-          <ScrollProgress />
-          <div className="sand-grain-overlay" />
-          <Navbar />
-          {children}
-          <Footer />
-        </LenisProvider>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <LenisProvider>
+            <CustomCursor />
+            <ScrollProgress />
+            <ThemeToggle />
+            <div className="sand-grain-overlay" />
+            <Navbar />
+            {children}
+            <Footer />
+          </LenisProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

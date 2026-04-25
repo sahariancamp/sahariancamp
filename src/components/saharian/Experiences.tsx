@@ -2,6 +2,7 @@
 
 import { useState, useRef, MouseEvent, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 import { fetchActivities } from '@/lib/api'
 
 // Data fetched from API
@@ -43,21 +44,26 @@ function TiltCard({ experience, onClick }: { experience: any; onClick: () => voi
       >
         {/* Image */}
         <div className="relative h-40 md:h-48 overflow-hidden">
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-            style={{ backgroundImage: `url('${experience.image_url}')` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A2E] via-transparent to-transparent" />
+          <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+            <Image
+              src={experience.image_url}
+              alt={experience.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
           
           {/* Color accent bar */}
           <div
             className="absolute top-0 left-0 right-0 h-1"
-            style={{ backgroundColor: experience.color || '#C4A35A' }}
+            style={{ backgroundColor: experience.color || 'var(--primary)' }}
           />
           
           {/* Duration badge */}
-          <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-[#0F0F1E]/70 backdrop-blur-sm border border-[#C4A35A]/20">
-            <span className="text-[#D4C4A8] text-xs" style={{ fontFamily: "'Amiri', serif" }}>
+          <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-background/70 backdrop-blur-sm border border-primary/20">
+            <span className="text-muted-foreground text-xs" style={{ fontFamily: "'Amiri', serif" }}>
               {experience.duration}
             </span>
           </div>
@@ -67,23 +73,23 @@ function TiltCard({ experience, onClick }: { experience: any; onClick: () => voi
         <div className="p-6 tilt-card-content">
           <p
             className="text-xs tracking-[0.3em] uppercase mb-2"
-            style={{ color: experience.color || '#C4A35A', fontFamily: "'Amiri', serif" }}
+            style={{ color: experience.color || 'var(--primary)', fontFamily: "'Amiri', serif" }}
           >
             {experience.subtitle || 'Experience'}
           </p>
           <h3
-            className="text-xl md:text-2xl font-light text-[#E8D5B7] mb-3"
+            className="text-xl md:text-2xl font-light text-foreground mb-3"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {experience.name}
           </h3>
-          <p className="text-[#D4C4A8]/60 text-sm line-clamp-2 leading-relaxed">
+          <p className="text-muted-foreground/60 text-sm line-clamp-2 leading-relaxed">
             {experience.description}
           </p>
           <div className="mt-4 flex items-center gap-2 group/btn">
             <span
               className="text-xs tracking-wider uppercase"
-              style={{ color: experience.color || '#C4A35A', fontFamily: "'Amiri', serif" }}
+              style={{ color: experience.color || 'var(--primary)', fontFamily: "'Amiri', serif" }}
             >
               Discover more
             </span>
@@ -120,7 +126,7 @@ export default function Experiences({ initialData = [] }: { initialData?: any[] 
 
   if (loading || experiences.length === 0) {
     return (
-      <section id="experiences" className="py-16 text-center text-[#E8D5B7] desert-gradient">
+      <section id="experiences" className="py-16 text-center text-foreground desert-gradient">
         <div className="animate-pulse">Loading Rituals...</div>
       </section>
     )
@@ -132,7 +138,7 @@ export default function Experiences({ initialData = [] }: { initialData?: any[] 
         {/* Section header */}
         <div className="text-center mb-10 md:mb-16">
           <motion.span
-            className="text-[#C4A35A] text-xs tracking-[0.5em] uppercase block mb-6"
+            className="text-primary text-xs tracking-[0.5em] uppercase block mb-6"
             style={{ fontFamily: "'Amiri', serif" }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -141,18 +147,18 @@ export default function Experiences({ initialData = [] }: { initialData?: any[] 
             The Rituals
           </motion.span>
           <motion.h2
-            className="text-4xl md:text-6xl lg:text-7xl font-light text-[#E8D5B7] mb-6 text-glow"
+            className="text-4xl md:text-6xl lg:text-7xl font-light text-foreground mb-6 text-glow"
             style={{ fontFamily: "'Playfair Display', serif" }}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            Ancient <span className="text-[#C4A35A]">Rituals</span>,<br />
+            Ancient <span className="text-primary">Rituals</span>,<br />
             Timeless Thrills
           </motion.h2>
           <motion.div
-            className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#C4A35A] to-transparent mx-auto"
+            className="w-24 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto"
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
@@ -182,7 +188,7 @@ export default function Experiences({ initialData = [] }: { initialData?: any[] 
             exit={{ opacity: 0 }}
           >
             <div
-              className="absolute inset-0 bg-[#0A0A1A]/90 backdrop-blur-xl"
+              className="absolute inset-0 bg-background/90 backdrop-blur-xl"
               onClick={() => setSelectedExperience(null)}
             />
             <motion.div
@@ -194,17 +200,21 @@ export default function Experiences({ initialData = [] }: { initialData?: any[] 
             >
               {/* Image */}
               <div className="relative h-64 md:h-80">
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url('${selectedExperience.image_url}')` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A2E] via-[#1A1A2E]/50 to-transparent" />
+                <div className="absolute inset-0">
+                  <Image
+                    src={selectedExperience.image_url}
+                    alt={selectedExperience.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
                 <div
                   className="absolute top-0 left-0 right-0 h-1"
-                  style={{ backgroundColor: selectedExperience.color || '#C4A35A' }}
+                  style={{ backgroundColor: selectedExperience.color || 'var(--primary)' }}
                 />
                 <button
-                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#0F0F1E]/70 backdrop-blur-sm flex items-center justify-center text-[#D4C4A8] hover:text-[#C4A35A] transition-colors"
+                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-background/70 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
                   onClick={() => setSelectedExperience(null)}
                 >
                   ✕
@@ -215,40 +225,30 @@ export default function Experiences({ initialData = [] }: { initialData?: any[] 
               <div className="p-8">
                 <p
                   className="text-xs tracking-[0.3em] uppercase mb-2"
-                  style={{ color: selectedExperience.color || '#C4A35A', fontFamily: "'Amiri', serif" }}
+                  style={{ color: selectedExperience.color || 'var(--primary)', fontFamily: "'Amiri', serif" }}
                 >
                   {selectedExperience.subtitle || 'Experience'}
                 </p>
                 <h3
-                  className="text-3xl md:text-4xl font-light text-[#E8D5B7] mb-4"
+                  className="text-3xl md:text-4xl font-light text-foreground mb-4"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   {selectedExperience.name}
                 </h3>
-                <p className="text-[#D4C4A8]/70 text-base leading-relaxed mb-6">
+                <p className="text-muted-foreground/70 text-base leading-relaxed mb-6">
                   {selectedExperience.description}
                 </p>
                 <div className="flex items-center gap-6 mb-8">
                   <div className="flex items-center gap-2">
-                    <span className="text-[#8A8A9E] text-xs" style={{ fontFamily: "'Amiri', serif" }}>Duration:</span>
-                    <span className="text-[#E8D5B7] text-sm">{selectedExperience.duration}</span>
+                    <span className="text-muted-foreground text-xs" style={{ fontFamily: "'Amiri', serif" }}>Duration:</span>
+                    <span className="text-foreground text-sm">{selectedExperience.duration}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#8A8A9E] text-xs" style={{ fontFamily: "'Amiri', serif" }}>Level:</span>
-                    <span className="text-[#E8D5B7] text-sm">{selectedExperience.difficulty}</span>
+                    <span className="text-muted-foreground text-xs" style={{ fontFamily: "'Amiri', serif" }}>Level:</span>
+                    <span className="text-foreground text-sm">{selectedExperience.difficulty}</span>
                   </div>
                 </div>
-                <button
-                  className="magnetic-btn w-full py-4 rounded-full border border-[#C4A35A]/40 text-[#C4A35A] text-sm tracking-[0.2em] uppercase hover:bg-[#C4A35A]/10 transition-all"
-                  style={{ fontFamily: "'Amiri', serif" }}
-                  onClick={() => {
-                    setSelectedExperience(null)
-                    document.querySelector('#journey')?.scrollIntoView({ behavior: 'smooth' })
-                  }}
-                  data-cursor-hover
-                >
-                  Book This Experience
-                </button>
+                {/* Booking removed as per user request - bookable on-site only */}
               </div>
             </motion.div>
           </motion.div>

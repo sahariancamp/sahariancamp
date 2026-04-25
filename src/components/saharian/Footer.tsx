@@ -178,16 +178,16 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="relative min-h-[600px] overflow-hidden">
-      {/* Night sky background */}
+    <footer className="relative min-h-[600px] overflow-hidden bg-background">
+      {/* Night sky background - becomes Day background in light mode */}
       <div className="absolute inset-0 night-sky-gradient" />
 
-      {/* Stars */}
-      <div className="absolute inset-0 top-0 h-3/4">
+      {/* Stars - Only visible in dark mode */}
+      <div className="absolute inset-0 top-0 h-3/4 dark:opacity-100 opacity-0 transition-opacity duration-1000">
         {starConstellation.map((star, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full bg-white"
+            className="absolute rounded-full bg-foreground"
             style={{
               left: `${star.x}%`,
               top: `${star.y}%`,
@@ -208,23 +208,22 @@ export default function Footer() {
             }}
           />
         ))}
+        {/* Shooting stars canvas */}
+        <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
       </div>
 
-      {/* Shooting stars canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
-
-      {/* Campfire glow at bottom */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
+      {/* Campfire glow at bottom - Only in dark mode */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 dark:opacity-100 opacity-0 transition-opacity duration-1000">
         <div className="relative">
           {/* Glow layers */}
-          <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-96 h-40 rounded-full bg-[#C4A35A]/5 blur-3xl" style={{ animation: 'campfire-flicker 3s ease-in-out infinite' }} />
-          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-48 h-20 rounded-full bg-[#D4763C]/5 blur-2xl" style={{ animation: 'campfire-flicker 2s ease-in-out infinite' }} />
+          <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-96 h-40 rounded-full bg-primary/5 blur-3xl" style={{ animation: 'campfire-flicker 3s ease-in-out infinite' }} />
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-48 h-20 rounded-full bg-destructive/5 blur-2xl" style={{ animation: 'campfire-flicker 2s ease-in-out infinite' }} />
 
           {/* Ember particles */}
           {Array.from({ length: 8 }).map((_, i) => (
             <motion.div
               key={i}
-              className="absolute left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#C4A35A]"
+              className="absolute left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"
               style={{ bottom: 0 }}
               animate={{
                 y: [-20, -80 - Math.random() * 40],
@@ -250,10 +249,10 @@ export default function Footer() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
         >
-          <p className="text-[#C4A35A] text-lg italic" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <p className="text-primary text-lg italic" style={{ fontFamily: "'Playfair Display', serif" }}>
             &ldquo;The desert teaches that even emptiness can be full.&rdquo;
           </p>
-          <p className="text-[#8A8A9E] text-xs mt-2" style={{ fontFamily: "'Amiri', serif" }}>
+          <p className="text-muted-foreground/60 text-xs mt-2" style={{ fontFamily: "'Amiri', serif" }}>
             — Berber Proverb
           </p>
         </motion.div>
@@ -264,7 +263,7 @@ export default function Footer() {
         {/* Newsletter */}
         <div className="text-center mb-16">
           <motion.h3
-            className="text-2xl md:text-4xl font-light text-[#E8D5B7] mb-3"
+            className="text-2xl md:text-4xl font-light text-foreground mb-3"
             style={{ fontFamily: "'Playfair Display', serif" }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -273,7 +272,7 @@ export default function Footer() {
             Join the Caravan
           </motion.h3>
           <motion.p
-            className="text-[#D4C4A8]/50 text-sm mb-6"
+            className="text-muted-foreground/50 text-sm mb-6"
             style={{ fontFamily: "'Amiri', serif" }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -305,7 +304,7 @@ export default function Footer() {
                   {[...Array(3)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="absolute w-3 h-3 rounded-full bg-[#C4A35A]/5"
+                      className="absolute w-3 h-3 rounded-full bg-primary/5"
                       style={{ left: `${(i - 1) * 10}px` }}
                       animate={{
                         y: [0, -30],
@@ -323,7 +322,7 @@ export default function Footer() {
               )}
             </div>
             <button
-              className="px-6 py-3 rounded-full bg-[#C4A35A] text-[#0F0F1E] text-xs tracking-[0.2em] uppercase font-medium hover:bg-[#E8D5A0] transition-all"
+              className="px-6 py-3 rounded-full bg-primary text-background text-xs tracking-[0.2em] uppercase font-medium hover:opacity-90 transition-all"
               style={{ fontFamily: "'Amiri', serif" }}
               data-cursor-hover
             >
@@ -336,7 +335,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
           {footerLinks.map((section) => (
             <div key={section.title}>
-              <h4 className="text-[#C4A35A] text-xs tracking-[0.3em] uppercase mb-4" style={{ fontFamily: "'Amiri', serif" }}>
+              <h4 className="text-primary text-xs tracking-[0.3em] uppercase mb-4" style={{ fontFamily: "'Amiri', serif" }}>
                 {section.title}
               </h4>
               <ul className="space-y-2">
@@ -344,7 +343,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-[#D4C4A8]/40 hover:text-[#D4C4A8] text-sm transition-colors"
+                      className="text-muted-foreground/40 hover:text-foreground text-sm transition-colors"
                       data-cursor-hover
                     >
                       {link.label}
@@ -373,12 +372,12 @@ export default function Footer() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
               >
-                <div className="w-10 h-10 rounded-full border border-[#C4A35A]/20 flex items-center justify-center group-hover:border-[#C4A35A]/60 group-hover:bg-[#C4A35A]/10 transition-all">
-                  <Icon className="w-4 h-4 text-[#D4C4A8]/60 group-hover:text-[#C4A35A] transition-colors" />
+                <div className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center group-hover:border-primary/60 group-hover:bg-primary/10 transition-all">
+                  <Icon className="w-4 h-4 text-muted-foreground/60 group-hover:text-primary transition-colors" />
                 </div>
                 {/* Connecting lines on hover */}
                 {i < socialLinks.length - 1 && (
-                  <div className="absolute top-1/2 -right-8 w-8 h-[1px] bg-[#C4A35A]/0 group-hover:bg-[#C4A35A]/20 transition-all" />
+                  <div className="absolute top-1/2 -right-8 w-8 h-[1px] bg-primary/0 group-hover:bg-primary/20 transition-all" />
                 )}
               </motion.a>
             )
@@ -391,19 +390,19 @@ export default function Footer() {
           <div className="flex items-center gap-3">
              
             <span
-              className="text-[#C4A35A] text-sm tracking-[0.2em]"
+              className="text-primary text-sm tracking-[0.2em]"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               SAHARIAN CAMP
             </span>
           </div>
 
-          <p className="text-[#8A8A9E] text-xs text-center" style={{ fontFamily: "'Amiri', serif" }}>
+          <p className="text-muted-foreground/60 text-xs text-center" style={{ fontFamily: "'Amiri', serif" }}>
             © {new Date().getFullYear()} Saharian Camp. Merzouga, Morocco. All rights reserved.
           </p>
 
           <button
-            className="w-8 h-8 rounded-full border border-[#C4A35A]/20 flex items-center justify-center text-[#D4C4A8]/60 hover:text-[#C4A35A] hover:border-[#C4A35A]/40 transition-all"
+            className="w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center text-muted-foreground/60 hover:text-primary hover:border-primary/40 transition-all"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             data-cursor-hover
           >
