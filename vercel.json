@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/admin/:path*",
+      "destination": "https://api.sahariancamp.com/admin/:path*"
+    },
+    {
+      "source": "/storage/:path*",
+      "destination": "https://api.sahariancamp.com/storage/:path*"
+    },
+    {
+      "source": "/livewire/:path*",
+      "destination": "https://api.sahariancamp.com/livewire/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://api.sahariancamp.com/api/:path*"
+    }
+  ]
+} 
