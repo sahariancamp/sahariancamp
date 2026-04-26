@@ -22,17 +22,28 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Saharian Camp — Luxury Desert Experience | Merzouga, Morocco",
-  description: "An immersive luxury camp at the edge of Erg Chebbi dunes. Where the Sahara whispers and golden silence speaks. Experience Berber warmth, bio gastronomy, and infinite horizons.",
-  keywords: ["Saharian Camp", "luxury desert camp", "Merzouga", "Erg Chebbi", "Morocco", "glamping", "Sahara", "Berber experience"],
+  description:
+    "An immersive luxury camp at the edge of Erg Chebbi dunes. Where the Sahara whispers and golden silence speaks. Experience Berber warmth, bio gastronomy, and infinite horizons.",
+  keywords: [
+    "Saharian Camp",
+    "luxury desert camp",
+    "Merzouga",
+    "Erg Chebbi",
+    "Morocco",
+    "glamping",
+    "Sahara",
+    "Berber experience",
+  ],
   authors: [{ name: "Saharian Camp" }],
   icons: {
-    icon: "/logo.svg",
-    apple: "/logo.svg",
+    icon: "/images/logo.png",
+    apple: "/images/logo.png",
   },
   manifest: "/manifest.json",
   openGraph: {
     title: "Saharian Camp — Where the Dunes Whisper",
-    description: "Luxury camp at the edge of the impossible. Merzouga, Morocco.",
+    description:
+      "Luxury camp at the edge of the impossible. Merzouga, Morocco.",
     type: "website",
     locale: "en_US",
     siteName: "Saharian Camp",
@@ -40,7 +51,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Saharian Camp — Where the Dunes Whisper",
-    description: "Luxury camp at the edge of the impossible. Merzouga, Morocco.",
+    description:
+      "Luxury camp at the edge of the impossible. Merzouga, Morocco.",
   },
 };
 

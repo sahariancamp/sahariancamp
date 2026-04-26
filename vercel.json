@@ -15,6 +15,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://api.sahariancamp.com/api/:path*"
+    },
+    {
+      "source": "/cpanel/:path*",
+      "destination": "https://api.sahariancamp.com/cpanel/:path*"
     }
   ]
 } 
